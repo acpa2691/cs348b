@@ -52,9 +52,10 @@ enum BxDFType {
 	BSDF_DIFFUSE      = 1<<2,
 	BSDF_GLOSSY       = 1<<3,
 	BSDF_SPECULAR     = 1<<4,
+	BSDF_FLUORESCENT = 1<<5,
 	BSDF_ALL_TYPES        = BSDF_DIFFUSE |
 	                        BSDF_GLOSSY |
-					        BSDF_SPECULAR,
+					        BSDF_SPECULAR | BSDF_FLUORESCENT,
 	BSDF_ALL_REFLECTION   = BSDF_REFLECTION |
 	                        BSDF_ALL_TYPES,
 	BSDF_ALL_TRANSMISSION = BSDF_TRANSMISSION |
@@ -310,7 +311,7 @@ public:
 	// Blinn Public Methods
 	float D(const Vector &wh) const {
 		float costhetah = fabsf(CosTheta(wh));
-		float sinthetah = sqrtf(max(0.f, 1-costhetah*costhetah));
+		//float sinthetah = sqrtf(max(0.f, 1-costhetah*costhetah));
 		float value = (exponent+2) *INV_TWOPI *powf(costhetah, exponent);
 		//printf("Blinn cos value: %f sin value: %f final value: %f\n", costhetah, sinthetah, value);
 		return value;
