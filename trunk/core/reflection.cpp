@@ -653,4 +653,21 @@ Spectrum BSDF::rho(const Vector &wo, BxDFType flags) const {
 			ret += bxdfs[i]->rho(wo);
 	return ret;
 }
+/*
+Spectrum Fluoro_BSDF::f(const Vector &woW,
+		const Vector &wiW, BxDFType flags) const {
+	Vector wi = WorldToLocal(wiW), wo = WorldToLocal(woW);
+	if (Dot(wiW, ng) * Dot(woW, ng) > 0)
+		// ignore BTDFs
+		flags = BxDFType(flags & ~BSDF_TRANSMISSION);
+	else
+		// ignore BRDFs
+		flags = BxDFType(flags & ~BSDF_REFLECTION);
+	Spectrum f = 0.;
+	for (int i = 0; i < nBxDFs; ++i)
+		if (bxdfs[i]->MatchesFlags(flags))
+			f += bxdfs[i]->f(wo, wi);
+	return f;
+}*/
+
 MemoryArena BSDF::arena;

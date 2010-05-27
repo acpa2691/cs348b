@@ -147,7 +147,7 @@ Spectrum SpectrumFromString(string paramString)
 			return Spectrum(0.f);
 		}
 		
-		float curMean, curVariance, curAmplitude;
+		float curMean, curStddev, curAmplitude;
 		for(unsigned int i = 0; i < tokens.size(); i++)
 		{
 			if(i%3 == 0)
