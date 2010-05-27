@@ -27,6 +27,8 @@
 #include "pbrt.h"
 #include "geometry.h"
 #include "shape.h"
+#include "bispectrum.h"
+
 // BSDF Inline Functions
 inline float CosTheta(const Vector &w) { return w.z; }
 inline float SinTheta(const Vector &w) {
@@ -117,9 +119,9 @@ private:
 #define BSDF_ALLOC(T)  new (BSDF::Alloc(sizeof(T))) T
 
 class COREDLL FluoroBSDF : public BSDF {
-	
-	Spectrum f(const Vector &woW, const Vector &wiW,
-		BxDFType flags = BSDF_ALL) const;
+	public:
+		Spectrum f(const Vector &woW, const Vector &wiW, BxDFType flags = BSDF_ALL) const;
+		Bispectrum reradiation;
 };
 
 // BxDF Declarations
