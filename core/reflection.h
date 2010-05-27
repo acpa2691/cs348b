@@ -115,6 +115,13 @@ private:
 	static MemoryArena arena;
 };
 #define BSDF_ALLOC(T)  new (BSDF::Alloc(sizeof(T))) T
+
+class COREDLL FluoroBSDF : public BSDF {
+	
+	Spectrum f(const Vector &woW, const Vector &wiW,
+		BxDFType flags = BSDF_ALL) const;
+};
+
 // BxDF Declarations
 class COREDLL BxDF {
 public:

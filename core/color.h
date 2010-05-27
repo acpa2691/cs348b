@@ -39,20 +39,22 @@ using namespace std;
 class COREDLL Spectrum {
  public:
   // Spectrum Public Methods
+
   Spectrum(float v = 0.f) {
     fill(c,c+SPECTRUM_SAMPLES,v);
   }
-  Spectrum(float cs[SPECTRUM_SAMPLES]) {
+	//cs needs to have sive SPECTRUM_SAMPLES
+  Spectrum(float * cs) {
     for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
       c[i] = cs[i];
   }
   
 Spectrum(float mean, float stdev, float scale){
     fill(c,c+SPECTRUM_SAMPLES,0.f);
-    int minLambda = max(mean - 3 * stdev, SPECTRUM_START);
-    int maxLambda = min (mean + 3 * stdev, SPECTRUM_END);
+    int minLambda = max(mean - 3 * stdev, (float)SPECTRUM_START);
+    int maxLambda = min (mean + 3 * stdev, (float)SPECTRUM_END);
     int index = minLambda - SPECTRUM_START;
-    float var = stdev*detdev;
+    float var = stdev*stdev;
     float coeff = scale / sqrt(2*3.145*var);
     float invTwoVar = -1.f / (2.f*var);
     while(index <= maxLambda - SPECTRUM_START){
@@ -189,11 +191,13 @@ Spectrum(float mean, float stdev, float scale){
     }
     float y() const {
       float v = 0.;
-      for (int i = SPECTRUM_START; i < SPECTRUM_END; ++i) {
-	if( i > CIEstart && i < CIEend){
-	  v[1] += YWeight[i-CIEstart] * c[i-SPECTRUM_START];
-	}
+      for (int i = SPECTRUM_START; i < SPECTRUM_END; ++i) 
+	  {
+		if( i > CIEstart && i < CIEend){
+		  v += YWeight[i-CIEstart] * c[i-SPECTRUM_START];
+		}
       }
+		return v;
     }
     bool operator<(const Spectrum &s2) const {
       return y() < s2.y();
