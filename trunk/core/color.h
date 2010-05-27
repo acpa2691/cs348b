@@ -57,22 +57,33 @@ Spectrum(float mean, float stdev, float scale){
     float var = stdev*stdev;
     float coeff = scale / sqrt(2*3.145*var);
     float invTwoVar = -1.f / (2.f*var);
+	printf("index:%d minLambda: %d maxLambda: %d\n", index, minLambda, maxLambda);
     while(index <= maxLambda - SPECTRUM_START){
       float lambda = index + SPECTRUM_START;
       c[index] = coeff * expf(invTwoVar * (lambda - mean)*(lambda-mean));
+		printf("added value: %f\n", c[index]);
+		index++;
     }
   }
 
     friend ostream &operator<<(ostream &, const Spectrum &);
     Spectrum &operator+=(const Spectrum &s2) {
+		//printf("attempting add\n");
       for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	c[i] += s2.c[i];
-      return *this;
+	{
+		c[i] += s2.c[i];
+		//printf("adding %d\n", i);
+      }
+	return *this;
     }
     Spectrum operator+(const Spectrum &s2) const {
+		//printf("attempting add\n");
       Spectrum ret = *this;
       for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	ret.c[i] += s2.c[i];
+	  {
+		  ret.c[i] += s2.c[i];
+		 // printf("adding %d\n", i);
+	  }
       return ret;
     }
     Spectrum operator-(const Spectrum &s2) const {
