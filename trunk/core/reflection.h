@@ -146,7 +146,7 @@ public:
 class COREDLL FluoroBxDF : public BxDF {
 	public:
 		FluoroBxDF(string & filename);
-		Spectrum f(const Vector &woW, const Vector &wiW, BxDFType flags = BSDF_ALL) const;
+		Spectrum f(const Vector &woW, const Vector &wiW) const;
 	private:
 		Bispectrum * reradiation;
 };

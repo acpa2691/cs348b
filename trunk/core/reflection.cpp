@@ -659,8 +659,7 @@ FluoroBxDF::FluoroBxDF(string & filename) : BxDF(BxDFType(BSDF_FLUORESCENT))
 	reradiation = new Bispectrum(filename);
 }
 
-Spectrum FluoroBxDF::f(const Vector &woW,
-		const Vector &wiW, BxDFType flags) const {
+Spectrum FluoroBxDF::f(const Vector &woW, const Vector &wiW) const{
 	return *reradiation;
 }
 

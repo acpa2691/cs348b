@@ -24,6 +24,7 @@
 // Fluorescent.cpp*
 #include "pbrt.h"
 #include "material.h"
+#include "reflection.h"
 // Fluorescent Class Declarations
 class Fluorescent : public Material {
 public:
@@ -31,11 +32,13 @@ public:
 	Fluorescent(Reference<Texture<Spectrum> > kd,
 			Reference<Texture<Spectrum> > ks,
 			Reference<Texture<float> > rough,
-			Reference<Texture<float> > bump) {
+			Reference<Texture<float> > bump,
+			string & filename) {
 		Kd = kd;
 		Ks = ks;
 		roughness = rough;
 		bumpMap = bump;
+		fluoroBxDF = new FluoroBxDF(filename);
 	}
 	BSDF *GetBSDF(const DifferentialGeometry &dgGeom,
 	              const DifferentialGeometry &dgShading) const;
@@ -43,7 +46,7 @@ private:
 	// Fluorescent Private Data
 	Reference<Texture<Spectrum> > Kd, Ks;
 	Reference<Texture<float> > roughness, bumpMap;
-	FluoroBSDF myBSDF;
+	FluoroBxDF * fluoroBxDF;
 };
 // Fluorescent Method Definitions
 BSDF *Fluorescent::GetBSDF(const DifferentialGeometry &dgGeom,
@@ -65,6 +68,7 @@ BSDF *Fluorescent::GetBSDF(const DifferentialGeometry &dgGeom,
 		BSDF_ALLOC(SineDistribution)(1.f / rough));
 	bsdf->Add(diff);
 	bsdf->Add(spec);
+	bsdf->Add(fluoroBxDF);
 	return bsdf;
 }
 // Fluorescent Dynamic Creation Routine
@@ -74,5 +78,6 @@ extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
 	Reference<Texture<Spectrum> > Ks = mp.GetSpectrumTexture("Ks", Spectrum(1.f));
 	Reference<Texture<float> > roughness = mp.GetFloatTexture("roughness", .1f);
 	Reference<Texture<float> > bumpMap = mp.GetFloatTexture("bumpmap", 0.f);
-	return new Fluorescent(Kd, Ks, roughness, bumpMap);
+	string fluoroFile = "orange dayglo.txt";
+	return new Fluorescent(Kd, Ks, roughness, bumpMap, fluoroFile);
 }
