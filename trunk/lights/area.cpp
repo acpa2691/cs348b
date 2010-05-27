@@ -24,6 +24,9 @@
 // area.cpp*
 #include "light.h"
 #include "primitive.h"
+
+#include <string>
+#include <vector>
 // AreaLight Method Definitions
 AreaLight::AreaLight(const Transform &light2world,
 		const Spectrum &le, int ns,
@@ -103,9 +106,79 @@ Spectrum AreaLight::Sample_L(const Point &P, Vector *wo,
 	if (pdf == 0.f) return Spectrum(0.f);
 	return L(P, Ns, -*wo) /	pdf;
 }
+
+void Tokenize(const string& str,
+                      vector<string>& tokens,
+                      const string& delimiters = " ")
+{
+    // Skip delimiters at beginning.
+    string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+    // Find first "non-delimiter".
+    string::size_type pos     = str.find_first_of(delimiters, lastPos);
+
+    while (string::npos != pos || string::npos != lastPos)
+    {
+        // Found a token, add it to the vector.
+        tokens.push_back(str.substr(lastPos, pos - lastPos));
+        // Skip delimiters.  Note the "not_of"
+        lastPos = str.find_first_not_of(delimiters, pos);
+        // Find next "non-delimiter"
+        pos = str.find_first_of(delimiters, lastPos);
+    }
+}
+
+Spectrum SpectrumFromString(string paramString)
+{
+	Spectrum L = Spectrum(0.f);
+	if(paramString.compare("black") == 0)
+	{
+		//return some predetermined UV + blue peaks
+		L += Spectrum(368.0f, 18.f, 0.6f);
+	}else if(paramString.compare("blackblue") == 0)
+	{
+		//return some predetermined UV + purple peaks
+		L += Spectrum(368.0f, 18.f, 0.8f);
+	}else{
+		vector<string> tokens;
+		Tokenize(paramString, tokens);
+		if(tokens.size()%3 != 0)
+		{
+			printf("AREA LIGHT PARSE ERROR\n");
+			return Spectrum(0.f);
+		}
+		
+		float curMean, curVariance, curAmplitude;
+		for(unsigned int i = 0; i < tokens.size(); i++)
+		{
+			if(i%3 == 0)
+			{
+				curMean = atof(tokens.at(i).c_str());
+			}else if(i%3 == 1)
+			{
+				curStddev= atof(tokens.at(i).c_str());
+			}else if(i%3 == 2)
+			{
+				curAmplitude = atof(tokens.at(i).c_str());
+				printf("adding peak with mean: %f variance: %f amplitude: %f\n", curMean, curStddev, curAmplitude);
+				L += Spectrum(curMean, curStddev, curAmplitude);
+			}
+		}
+	}
+	
+	return L;
+}
+
 extern "C" DLLEXPORT Light *CreateAreaLight(const Transform &light2world, const ParamSet &paramSet,
 		const Reference<Shape> &shape) {
 	Spectrum L = paramSet.FindOneSpectrum("L", Spectrum(1.0));
 	int nSamples = paramSet.FindOneInt("nsamples", 1);
+	string regularType = "regular";
+	string lightType = paramSet.FindOneString("type", regularType);
+	if(lightType.compare(regularType) != 0)//then modify L to use our custom spectrum definition
+	{
+		L = SpectrumFromString(lightType);
+		printf("making a light with spec: %s\n", lightType.c_str());
+	}
+	
 	return new AreaLight(light2world, L, nSamples, shape);
 }
