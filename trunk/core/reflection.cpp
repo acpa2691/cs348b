@@ -241,11 +241,11 @@ float Microfacet::Pdf(const Vector &wo,
 }
 void Blinn::Sample_f(const Vector &wo, Vector *wi,
 		float u1, float u2, float *pdf) const {
-	Blinn::Sample_cosine(wo, wi, u1, u2, pdf);
+	Blinn::Sample_derived(wo, wi, u1, u2, pdf);
 }
 
 float Blinn::Pdf(const Vector &wo, const Vector &wi) const {
-	return Blinn::Pdf_cosine(wo, wi);
+	return Blinn::Pdf_derived(wo, wi);
 }
 
 float Blinn::Pdf_derived(const Vector &wo, const Vector &wi) const {
@@ -653,21 +653,15 @@ Spectrum BSDF::rho(const Vector &wo, BxDFType flags) const {
 			ret += bxdfs[i]->rho(wo);
 	return ret;
 }
-/*
-Spectrum Fluoro_BSDF::f(const Vector &woW,
+
+FluoroBxDF::FluoroBxDF(string & filename) : BxDF(BxDFType(BSDF_FLUORESCENT))
+{
+	reradiation = new Bispectrum(filename);
+}
+
+Spectrum FluoroBxDF::f(const Vector &woW,
 		const Vector &wiW, BxDFType flags) const {
-	Vector wi = WorldToLocal(wiW), wo = WorldToLocal(woW);
-	if (Dot(wiW, ng) * Dot(woW, ng) > 0)
-		// ignore BTDFs
-		flags = BxDFType(flags & ~BSDF_TRANSMISSION);
-	else
-		// ignore BRDFs
-		flags = BxDFType(flags & ~BSDF_REFLECTION);
-	Spectrum f = 0.;
-	for (int i = 0; i < nBxDFs; ++i)
-		if (bxdfs[i]->MatchesFlags(flags))
-			f += bxdfs[i]->f(wo, wi);
-	return f;
-}*/
+	return *reradiation;
+}
 
 MemoryArena BSDF::arena;

@@ -118,11 +118,7 @@ private:
 };
 #define BSDF_ALLOC(T)  new (BSDF::Alloc(sizeof(T))) T
 
-class COREDLL FluoroBSDF : public BSDF {
-	public:
-		Spectrum f(const Vector &woW, const Vector &wiW, BxDFType flags = BSDF_ALL) const;
-		Bispectrum reradiation;
-};
+
 
 // BxDF Declarations
 class COREDLL BxDF {
@@ -146,6 +142,15 @@ public:
 	// BxDF Public Data
 	const BxDFType type;
 };
+
+class COREDLL FluoroBxDF : public BxDF {
+	public:
+		FluoroBxDF(string & filename);
+		Spectrum f(const Vector &woW, const Vector &wiW, BxDFType flags = BSDF_ALL) const;
+	private:
+		Bispectrum * reradiation;
+};
+
 class COREDLL BRDFToBTDF : public BxDF {
 public:
 	// BRDFToBTDF Public Methods
