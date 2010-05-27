@@ -28,10 +28,11 @@
 #include "pbrt.h"
 #include <algorithm>
 
-#define SPECTRUM_SAMPLES nCIE
+
 #define SPECTRUM_SPACING 1
-#define SPECTRUM_START CIEstart
+#define SPECTRUM_START 350
 #define SPECTRUM_END CIEend
+#define SPECTRUM_SAMPLES (SPECTRUM_END - SPECTRUM_START + 1)
 
 using namespace std;
 
@@ -65,6 +66,15 @@ Spectrum(float mean, float stdev, float scale){
 		index++;
     }
   }
+	
+	float getValueAtWavelength(float waveLength)
+	{
+		return 1.f;
+	}
+	
+	void setValueAtWavelength(float value, float waveLength)
+	{
+	}
 
     friend ostream &operator<<(ostream &, const Spectrum &);
     Spectrum &operator+=(const Spectrum &s2) {
