@@ -150,6 +150,7 @@ Spectrum SpectrumFromString(string paramString)
 		float curMean, curStddev, curAmplitude;
 		for(unsigned int i = 0; i < tokens.size(); i++)
 		{
+			printf("on number:%d\n", i);
 			if(i%3 == 0)
 			{
 				curMean = atof(tokens.at(i).c_str());
@@ -160,7 +161,8 @@ Spectrum SpectrumFromString(string paramString)
 			{
 				curAmplitude = atof(tokens.at(i).c_str());
 				printf("adding peak with mean: %f variance: %f amplitude: %f\n", curMean, curStddev, curAmplitude);
-				L += Spectrum(curMean, curStddev, curAmplitude);
+				Spectrum curSpectrum = Spectrum(curMean, curStddev, curAmplitude);
+				L += curSpectrum;
 			}
 		}
 	}
