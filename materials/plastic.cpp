@@ -61,7 +61,7 @@ BSDF *Plastic::GetBSDF(const DifferentialGeometry &dgGeom,
 	Spectrum ks = Ks->Evaluate(dgs).Clamp();
 	float rough = roughness->Evaluate(dgs);
 	BxDF *spec = BSDF_ALLOC(Microfacet)(ks, fresnel,
-		BSDF_ALLOC(SineDistribution)(1.f / rough));
+		BSDF_ALLOC(Blinn)(1.f / rough));
 	bsdf->Add(diff);
 	bsdf->Add(spec);
 	return bsdf;
