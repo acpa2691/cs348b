@@ -1,0 +1,105 @@
+
+#
+# The following lines define the size of the output image and the name of
+# of the file containing the result of rendering
+#
+Film "image" "string filename" ["lighting4.exr"]
+	"integer xresolution" [400] "integer yresolution" [400]
+
+#
+# Sampling specification: PBRT will shoot 2 samples rays per pixel.
+# Increasing the number of samples per pixel will increase image quality
+# at the cost of increased rendering time.  Feel free to crank this value
+# up in your final images.
+#
+
+Sampler "lowdiscrepancy" "integer pixelsamples" [9] 
+
+#
+# Camera configuration: the camera is located on the Z axis, and is
+# pointed at the center of the scene
+#
+LookAt 1.5 0 4.2  0 0 0   0 1 0
+Camera "perspective" "float fov" [22]
+
+
+
+WorldBegin
+
+#
+# light source configuration:  The next region of the pbrt scene file
+# defines the light sources that illuminate the scene.  Currently the
+# scene is illuminated by a single spotlight source
+#
+#
+# Spotlight source with 60 degree cone angle pointed at the center of
+# the scene
+#
+
+#LightSource "spot" "color I" [50 50 50] "point from" [0.0 3.5 3] "point to" [0 0 0] "float coneangle" [80]
+
+
+# main light
+AttributeBegin
+  AreaLightSource "area" "color L" [10 10 10] "integer nsamples" [4]
+  Translate 0 3 3
+  Rotate 90 1 0 0
+  Shape "disk" "float radius" [1.5] 
+AttributeEnd
+
+#fill light
+AttributeBegin
+  AreaLightSource "area" "color L" [10 10 10] "integer nsamples" [4]
+  Translate 3.5 3.3 7
+  Rotate 90 1 0 0
+  Shape "disk" "float radius" [2.0] 
+AttributeEnd
+
+#accent light
+AttributeBegin
+  AreaLightSource "area" "color L" [10 10 10] "integer nsamples" [4]
+  Translate 1.5 8.25 -4
+  Shape "disk" "float radius" [1.5] 
+AttributeEnd
+
+#background light
+AttributeBegin
+  AreaLightSource "area" "color L" [10 10 10] "integer nsamples" [4]
+  Translate 3 -1 -5.25
+  Rotate 135 1 0 0
+  Rotate -45 0 1 0
+  Shape "disk" "float radius" [0.5] 
+AttributeEnd
+
+#
+# The following sections define scene geometry and the material properties
+#
+
+#
+# Backdrop
+#
+
+AttributeBegin
+Material "matte" "color Kd" [0.8 0.8 0.8 ]
+Translate 0 -5 0
+Shape "trianglemesh" "integer indices" [ 0 1 2 2 0 3 ]
+    "point P" [-10 0 -10   10 0 -10   10 9 -10   -10 9 -10 ]
+AttributeEnd
+
+
+#
+# Head model
+#
+
+Material "uber" "color Kd" [1 1 1 ] "color Ks" [.05 .05 .05]
+AttributeBegin
+Translate 0 -0.2 0
+Rotate 180 0 1 0
+Scale 0.1 0.1 0.1
+Shape "loopsubdiv" "integer nlevels" [1]
+Include "head_model.pbrt"
+AttributeEnd
+
+WorldEnd
+
+
