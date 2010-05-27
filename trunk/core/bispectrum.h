@@ -9,35 +9,14 @@ class COREDLL Bispectrum : public Spectrum{
  public:
   // Spectrum Public Methods
 
-  Bispectrum(string &filename) 
-  {
-    //parse the file
-  }
+	Bispectrum(string &filename);
 	
    //perform the matrix multiplication and return the result
-   Spectrum timeSpectrum(Spectrum & input)
-	{
-		Spectrum result; 
-		
-		for(int i = 0; i < nOutputIndices; i++)
-		{
-			int curBaseIndex = i*nOutputIndices;
-			float curOutputWavelength = outputIndices[i];
-			float total = 0.f;
-			for(int k = 0; k < nInputIndices; k++)
-			{
-				float curInputWavelength = inputIndices[k];
-				total += data[curBaseIndex+k]*input.getValueAtWavelength(curInputWavelength);
-			}
-			result.setValueAtWavelength(total, curOutputWavelength);
-		}
-		
-		return result;
-	}
+	Spectrum output(Spectrum & input);
 
  private:
 	int nInputIndices;
-	int nOutputIndices
+	int nOutputIndices;
 	float * inputIndices;
 	float * outputIndices;
 	
