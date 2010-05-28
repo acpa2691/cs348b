@@ -22,7 +22,7 @@
  */
 
 // color.cpp*
-#include "color_old.h"
+#include "color.h"
 // Spectrum Method Definitions
 ostream &operator<<(ostream &os, const Spectrum &s) {
 	for (int i = 0; i < COLOR_SAMPLES; ++i) {

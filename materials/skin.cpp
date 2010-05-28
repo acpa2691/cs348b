@@ -60,7 +60,7 @@ BSDF *Skin::GetBSDF(const DifferentialGeometry &dgGeom, const DifferentialGeomet
 	return bsdf;
 }
 extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
-		const TextureParams &mp) {
+		const TextureParams &mp, ParamSet * paramSet) {
 	Reference<Texture<float> > bumpMap = mp.GetFloatTexture("bumpmap", 0.f);
 	return new Skin(bumpMap);
 }

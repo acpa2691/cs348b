@@ -59,7 +59,7 @@ BSDF *BrushedMetal::GetBSDF(const DifferentialGeometry &dgGeom, const Differenti
 	return bsdf;
 }
 extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
-		const TextureParams &mp) {
+		const TextureParams &mp, ParamSet * paramSet) {
 	Reference<Texture<float> > bumpMap = mp.GetFloatTexture("bumpmap", 0.f);
 	return new BrushedMetal(bumpMap);
 }

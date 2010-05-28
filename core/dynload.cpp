@@ -122,7 +122,7 @@ public:
 	CreateShapeFunc CreateShape;
 };
 class MaterialPlugin : public Plugin {
-	typedef Material * (*CreateMaterialFunc)(const Transform &shader2world, const TextureParams &);
+	typedef Material * (*CreateMaterialFunc)(const Transform &shader2world, const TextureParams &, ParamSet *);
 public:
 	MaterialPlugin( const string &name ): Plugin( name )
 	{
@@ -305,12 +305,12 @@ static string SearchPath(const string &searchpath,
 }
 COREDLL Reference<Material> MakeMaterial(const string &name,
 		const Transform &mtl2world,
-		const TextureParams &mp) {
+		const TextureParams &mp, ParamSet * paramSet) {
 	MaterialPlugin *plugin = GetPlugin<MaterialPlugin>(name, materialPlugins,
 		PluginSearchPath);
 	if (plugin) {
-		Reference<Material> ret =
-			plugin->CreateMaterial(mtl2world, mp);
+	
+		Reference<Material> ret = plugin->CreateMaterial(mtl2world, mp, paramSet);
 		mp.ReportUnused();
 		return ret;
 	}

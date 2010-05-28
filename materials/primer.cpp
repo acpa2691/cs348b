@@ -60,7 +60,7 @@ BSDF *Primer::GetBSDF(const DifferentialGeometry &dgGeom, const DifferentialGeom
 	return bsdf;
 }
 extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
-		const TextureParams &mp) {
+		const TextureParams &mp, ParamSet * paramSet) {
 	Reference<Texture<float> > bumpMap = mp.GetFloatTexture("bumpmap", 0.f);
 	return new Primer(bumpMap);
 }

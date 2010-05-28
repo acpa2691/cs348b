@@ -8,8 +8,8 @@ Bispectrum::Bispectrum(string &filename)
 
 Spectrum Bispectrum::output(Spectrum & input)
 {
-	Spectrum result; 
-	
+	Spectrum result(0.f); 
+	/*
 	for(int i = 0; i < nOutputIndices; i++)
 	{
 		int curBaseIndex = i*nOutputIndices;
@@ -22,6 +22,6 @@ Spectrum Bispectrum::output(Spectrum & input)
 		}
 		result.setValueAtWavelength(total, curOutputWavelength);
 	}
-	
+	*/
 	return result;
 }

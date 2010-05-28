@@ -62,7 +62,7 @@ BSDF *Substrate::GetBSDF(const DifferentialGeometry &dgGeom, const DifferentialG
 	return bsdf;
 }
 extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
-		const TextureParams &mp) {
+		const TextureParams &mp, ParamSet * paramSet) {
 	Reference<Texture<Spectrum> > Kd = mp.GetSpectrumTexture("Kd", Spectrum(.5f));
 	Reference<Texture<Spectrum> > Ks = mp.GetSpectrumTexture("Ks", Spectrum(.5f));
 	Reference<Texture<float> > uroughness = mp.GetFloatTexture("uroughness", .1f);
