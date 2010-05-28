@@ -62,7 +62,7 @@ BSDF *Glass::GetBSDF(const DifferentialGeometry &dgGeom, const DifferentialGeome
 	return bsdf;
 }
 extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
-		const TextureParams &mp) {
+		const TextureParams &mp, ParamSet * paramSet) {
 	Reference<Texture<Spectrum> > Kr = mp.GetSpectrumTexture("Kr", Spectrum(1.f));
 	Reference<Texture<Spectrum> > Kt = mp.GetSpectrumTexture("Kt", Spectrum(1.f));
 	Reference<Texture<float> > index = mp.GetFloatTexture("index", 1.5f);

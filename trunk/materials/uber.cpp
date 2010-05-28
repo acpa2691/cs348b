@@ -88,7 +88,7 @@ BSDF *UberMaterial::GetBSDF(const DifferentialGeometry &dgGeom, const Differenti
 }
 // UberMaterial Dynamic Creation Routine
 extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
-		const TextureParams &mp) {
+		const TextureParams &mp, ParamSet * paramSet) {
 	Reference<Texture<Spectrum> > Kd = mp.GetSpectrumTexture("Kd", Spectrum(1.f));
 	Reference<Texture<Spectrum> > Ks = mp.GetSpectrumTexture("Ks", Spectrum(1.f));
 	Reference<Texture<Spectrum> > Kr = mp.GetSpectrumTexture("Kr", Spectrum(0.f));

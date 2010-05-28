@@ -130,6 +130,7 @@ void Tokenize(const string& str,
 Spectrum SpectrumFromString(string paramString)
 {
 	Spectrum L = Spectrum(0.f);
+	
 	if(paramString.compare("black") == 0)
 	{
 		//return some predetermined UV + blue peaks

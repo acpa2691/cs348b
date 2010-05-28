@@ -54,7 +54,7 @@ BSDF *Mirror::GetBSDF(const DifferentialGeometry &dgGeom, const DifferentialGeom
 	return bsdf;
 }
 extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
-		const TextureParams &mp) {
+		const TextureParams &mp, ParamSet * paramSet) {
 	Reference<Texture<Spectrum> > Kr = mp.GetSpectrumTexture("Kr", Spectrum(1.f));
 	Reference<Texture<float> > bumpMap = mp.GetFloatTexture("bumpmap", 0.f);
 	return new Mirror(Kr, bumpMap);

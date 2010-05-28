@@ -73,11 +73,15 @@ BSDF *Fluorescent::GetBSDF(const DifferentialGeometry &dgGeom,
 }
 // Fluorescent Dynamic Creation Routine
 extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
-		const TextureParams &mp) {
+		const TextureParams &mp, ParamSet * paramSet = NULL) {
 	Reference<Texture<Spectrum> > Kd = mp.GetSpectrumTexture("Kd", Spectrum(1.f));
 	Reference<Texture<Spectrum> > Ks = mp.GetSpectrumTexture("Ks", Spectrum(1.f));
 	Reference<Texture<float> > roughness = mp.GetFloatTexture("roughness", .1f);
 	Reference<Texture<float> > bumpMap = mp.GetFloatTexture("bumpmap", 0.f);
-	string fluoroFile = "orange dayglo.txt";
+	string fluoroFile = "red_ink.txt";
+	if(paramSet != NULL)
+	{
+		fluoroFile = paramSet->FindOneString("reradiation", fluoroFile);
+	}
 	return new Fluorescent(Kd, Ks, roughness, bumpMap, fluoroFile);
 }

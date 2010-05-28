@@ -30,7 +30,7 @@ COREDLL void UpdatePluginPath(const string &newpath);
 COREDLL Reference<Shape> MakeShape(const string &name,
 	const Transform &object2world, bool reverseOrientation, const ParamSet &paramSet);
 COREDLL Reference<Material> MakeMaterial(const string &name,
-	const Transform &mtl2world, const TextureParams &mp);
+	const Transform &mtl2world, const TextureParams &mp, ParamSet * paramSet = NULL);
 COREDLL Reference<Texture<float> > MakeFloatTexture(const string &name,
 	const Transform &tex2world, const TextureParams &tp);
 COREDLL Reference<Texture<Spectrum> > MakeSpectrumTexture(const string &name,

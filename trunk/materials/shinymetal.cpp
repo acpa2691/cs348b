@@ -64,7 +64,7 @@ BSDF *ShinyMetal::GetBSDF(const DifferentialGeometry &dgGeom, const Differential
 	return bsdf;
 }
 extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
-		const TextureParams &mp) {
+		const TextureParams &mp, ParamSet * paramSet) {
 	Reference<Texture<Spectrum> > Kr = mp.GetSpectrumTexture("Kr", Spectrum(1.f));
 	Reference<Texture<Spectrum> > Ks = mp.GetSpectrumTexture("Ks", Spectrum(1.f));
 	Reference<Texture<float> > roughness = mp.GetFloatTexture("roughness", .1f);

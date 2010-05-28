@@ -598,7 +598,10 @@ Spectrum BSDF::Sample_f(const Vector &woW, Vector *wiW,
 			flags = BxDFType(flags & ~BSDF_REFLECTION);
 		for (int i = 0; i < nBxDFs; ++i)
 			if (bxdfs[i]->MatchesFlags(flags))
+			{
+				
 				f += bxdfs[i]->f(wo, wi);
+			}
 	}
 	return f;
 }

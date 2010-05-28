@@ -370,9 +370,14 @@ COREDLL void pbrtShape(const string &name,
 					 graphicsState.floatTextures,
 					 graphicsState.spectrumTextures);
 	Reference<Texture<float> > bump = NULL;
-	Reference<Material> mtl =
-		MakeMaterial(graphicsState.material,
-		             curTransform, mp);
+	Reference<Material> mtl;
+	string Default = "duh";
+	if(graphicsState.materialParams.FindOneString("reradiation", Default).compare(Default) != 0)
+	{
+		mtl = MakeMaterial(graphicsState.material, curTransform, mp);
+	}else{
+		mtl = MakeMaterial(graphicsState.material, curTransform, mp, &(graphicsState.materialParams));
+	}
 	if (!mtl)
 		mtl = MakeMaterial("matte", curTransform, mp);
 	if (!mtl)
