@@ -25,10 +25,9 @@
 #include "color.h"
 // Spectrum Method Definitions
 ostream &operator<<(ostream &os, const Spectrum &s) {
-	for (int i = 0; i < COLOR_SAMPLES; ++i) {
-		os << s.c[i];
-		if (i != COLOR_SAMPLES-1)
-			os << ", ";
+  for (const_sample_iterator i = s.samples.begin(); i != s.samples.end(); ++i) {
+		os << i->second;
+		os << ", ";
 	}
 	return os;
 }
