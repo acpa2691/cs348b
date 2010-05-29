@@ -10,6 +10,11 @@ class COREDLL Bispectrum : public Spectrum{
   // Spectrum Public Methods
 
 	Bispectrum(string &filename);
+	/*~Bispectrum() {
+		free(inputIndices);
+		free(outputIndices);
+		free(data);
+	}*/
 	
    //perform the matrix multiplication and return the result
 	Spectrum output(Spectrum & input);
