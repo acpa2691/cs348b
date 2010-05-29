@@ -26,15 +26,18 @@
 #define PBRT_COLOR_H
 // color.h*
 #include "pbrt.h"
+#include <map>
 #include <algorithm>
 
-
-#define SPECTRUM_SPACING 1
-#define SPECTRUM_START 350
-#define SPECTRUM_END CIEend
+//#define SPECTRUM_SAMPLES 471
+//#define SPECTRUM_SPACING 1
+//#define SPECTRUM_START CIEstart
+//#define SPECTRUM_END SPECTRUM_START + SPECTRUM_SAMPLES
 #define SPECTRUM_SAMPLES (SPECTRUM_END - SPECTRUM_START + 1)
 
 using namespace std;
+typedef map<int,float>::iterator sample_iterator;
+typedef map<int,float>::const_iterator const_sample_iterator;
 
 // Spectrum Declarations
 class COREDLL Spectrum {
@@ -42,202 +45,259 @@ class COREDLL Spectrum {
   // Spectrum Public Methods
 
   Spectrum(float v = 0.f) {
-    fill(c,c+SPECTRUM_SAMPLES,v);
+    defaultScale = v;
+    samples[438]= defaultScale;
+    samples[546] = defaultScale;
+    samples[700] = defaultScale;
   }
-	//cs needs to have sive SPECTRUM_SAMPLES
-  Spectrum(float * cs) {
-    for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-      c[i] = cs[i];
+  //cs needs to have sive SPECTRUM_SAMPLES
+  Spectrum(float  cs[3]) {
+    defaultScale = 0.f;
+    samples[438]= cs[2];
+    samples[546] = cs[1];
+    samples[700] = cs[0];
+
   }
   
-Spectrum(float mean, float stdev, float scale){
-    fill(c,c+SPECTRUM_SAMPLES,0.f);
-    int minLambda = max(mean - 3 * stdev, (float)SPECTRUM_START);
-    int maxLambda = min (mean + 3 * stdev, (float)SPECTRUM_END);
-    int index = minLambda - SPECTRUM_START;
+  Spectrum(float mean, float stdev, float scale){
+    defaultScale = 0.f;
+    //int minLambda = max(mean - 3 * stdev, (float)SPECTRUM_START);
+    //int maxLambda = min (mean + 3 * stdev, (float)SPECTRUM_END);
+    int minLambda = mean - 3 * stdev;
+    int maxLambda = mean + 3* stdev;
     float var = stdev*stdev;
     float coeff = scale / sqrt(2*3.145*var);
     float invTwoVar = -1.f / (2.f*var);
-	printf("index:%d minLambda: %d maxLambda: %d\n", index, minLambda, maxLambda);
-    while(index <= maxLambda - SPECTRUM_START){
-      float lambda = index + SPECTRUM_START;
-      c[index] = coeff * expf(invTwoVar * (lambda - mean)*(lambda-mean));
-		printf("added value: %f\n", c[index]);
-		index++;
+    for(int lambda = minLambda; lambda < maxLambda; lambda ++){
+      samples[lambda] = coeff * expf(invTwoVar * (lambda - mean)*(lambda-mean));
     }
   }
 	
-	float getValueAtWavelength(float waveLength)
-	{
-		return 1.f;
-	}
-	
-	void setValueAtWavelength(float value, float waveLength)
-	{
-	}
 
-    friend ostream &operator<<(ostream &, const Spectrum &);
-    Spectrum &operator+=(const Spectrum &s2) {
-		//printf("attempting add\n");
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	{
-		c[i] += s2.c[i];
-		//printf("adding %d\n", i);
+  friend ostream &operator<<(ostream &, const Spectrum &);
+
+  void setValueAtWavelength(float val, int lambda)
+  {
+    samples[lambda] = val;
+  }
+  
+  float getValueAtWavelength(int lambda) const
+  {
+    const_sample_iterator itr  = samples.find(lambda);
+    if(itr != samples.end()){
+      return itr->second;
+    }
+    else{
+      const_sample_iterator before = samples.lower_bound(lambda);
+      const_sample_iterator after = samples.upper_bound(lambda);
+     
+      if(before == samples.begin() || after == samples.end())
+	return defaultScale;
+      
+      return (lambda - before->first) * (after->second -after->first)/
+	(before->second - before->first);
+    }
+  }
+
+  Spectrum &operator+=(const Spectrum &s2) {
+    for (const_sample_iterator itr = s2.samples.begin(); itr != s2.samples.end();
+	 ++itr){
+      samples[itr->first] = itr->second + getValueAtWavelength(itr->first);
+    }
+    return *this;
+  }
+  Spectrum operator+(const Spectrum &s2) const {
+    //printf("attempting add\n");
+    Spectrum ret = *this;
+    for (const_sample_iterator itr = s2.samples.begin(); itr != s2.samples.end();
+	 ++itr){
+      ret.samples[itr->first] = itr->second + ret.getValueAtWavelength(itr->first);
+    }
+    return ret;
+  }
+  Spectrum operator-(const Spectrum &s2) const {
+    Spectrum ret = *this;
+    for (const_sample_iterator itr = s2.samples.begin(); itr != s2.samples.end();
+	 ++itr){
+      ret.samples[itr->first] = ret.getValueAtWavelength(itr->first) - itr->second;
+    }
+    return ret;
+  }
+  Spectrum operator/(const Spectrum &s2) const {
+    Spectrum ret = *this;
+    for (const_sample_iterator itr = s2.samples.begin(); itr != s2.samples.end();
+	 ++itr){
+      ret.samples[itr->first] =  ret.getValueAtWavelength(itr->first)/itr->second;
+    }
+    return ret;
+  }
+  Spectrum operator*(const Spectrum &sp) const {
+    Spectrum ret = *this;
+    for (const_sample_iterator itr = sp.samples.begin(); itr != sp.samples.end();
+	 ++itr){
+      ret.samples[itr->first] =  ret.getValueAtWavelength(itr->first)*itr->second;
+    }
+    return ret;
+  }
+  Spectrum &operator*=(const Spectrum &sp) {
+    for (const_sample_iterator itr = sp.samples.begin(); itr != sp.samples.end();
+	 ++itr){
+      samples[itr->first] =  getValueAtWavelength(itr->first)*itr->second;
+    }
+    return *this;
+  }
+  Spectrum operator*(float a) const {
+    Spectrum ret = *this;
+    for (const_sample_iterator itr = samples.begin(); itr != samples.end();
+	 ++itr){
+      ret.samples[itr->first] =  ret.getValueAtWavelength(itr->first)*a;
+    }
+    return ret;
+  }
+  Spectrum &operator*=(float a) {
+    for (sample_iterator itr = samples.begin(); itr != samples.end();
+	 ++itr){
+     samples[itr->first] =  getValueAtWavelength(itr->first)*a;
+    }
+    return *this;
+  }
+  friend inline
+    Spectrum operator*(float a, const Spectrum &s) {
+    return s * a;
+  }
+  Spectrum operator/(float a) const {
+    return *this * (1.f / a);
+  }
+  Spectrum &operator/=(float a) {
+    float inv = 1.f / a;
+    for (sample_iterator itr = samples.begin(); itr != samples.end();
+	 ++itr){
+      samples[itr->first] *= inv;
+    }
+    return *this;
+  }
+  void AddWeighted(float w, const Spectrum &s) {
+    for (const_sample_iterator itr = s.samples.begin(); itr != s.samples.end();
+	 ++itr)
+      samples[itr->first] = getValueAtWavelength(itr->first) * itr->second;
+  }
+  bool operator==(const Spectrum &sp) const {
+    const_sample_iterator itr1, itr2;
+    for(itr1 = samples.begin(), itr2 = sp.samples.begin();
+	itr1 != samples.end() && itr2 != sp.samples.end(); ++itr1,
+	  ++itr2){
+      if(itr1->first != itr2 ->first || itr1->second != itr2->second)
+	return false;
+    }
+    if(itr1 == samples.end() && itr2 == sp.samples.end()) return true;
+    return false;
+  }
+  bool operator!=(const Spectrum &sp) const {
+    return !(*this == sp);
+  }
+  bool Black() const {
+    for (const_sample_iterator itr = samples.begin(); itr != samples.end(); ++itr)
+      if (itr->second != 0. || defaultScale != 0.f) 
+	return false;
+    return true;
+  }
+  Spectrum Sqrt() const {
+    Spectrum ret;
+    for (const_sample_iterator itr = samples.begin(); itr !=
+	   samples.end(); ++itr){
+      int lambda = itr->first;
+      ret.samples[lambda] = sqrtf(samples.find(lambda)->second);
+    }
+    return ret;
+  }
+  Spectrum Pow(const Spectrum &e) const {
+    Spectrum ret;
+    for (const_sample_iterator itr = e.samples.begin(); itr != e.samples.end();
+    ++itr){
+      float lambda = itr->first;
+      float curVal = getValueAtWavelength(lambda);
+      ret.samples[lambda] =   curVal > 0.f ? curVal : 0.f;
+    }
+    return ret;
+  }
+  Spectrum operator-() const {
+    Spectrum ret;
+    for (const_sample_iterator itr = samples.begin(); itr != samples.end();
+	 ++itr){
+      ret.samples[itr->first] = -ret.getValueAtWavelength(itr->first);
+    }
+    return ret;
+  }
+
+  friend Spectrum Exp(const Spectrum &s) {
+    Spectrum ret;
+    for (const_sample_iterator itr = s.samples.begin(); itr != s.samples.end(); ++itr)
+      ret.samples[itr->first] = expf(itr->second);
+    return ret;
+  }
+  Spectrum Clamp(float low = 0.f,
+		 float high = INFINITY) const {
+    Spectrum ret;
+    for (const_sample_iterator itr = samples.begin(); itr != samples.end(); ++itr)
+      ret.samples[itr->first] = ::Clamp(itr->second,low,high);
+    return ret;
+  }
+  bool IsNaN() const {
+    for (const_sample_iterator itr = samples.begin(); itr != samples.end();   ++itr)
+      if(isnan(itr->second)) return true;
+    return false;
+  }
+  void Print(FILE *f) const {
+    for (const_sample_iterator itr = samples.begin(); itr != samples.end();   ++itr)
+      fprintf(f, "%f ", itr->second);
+  }
+
+  void XYZ(float xyz[3]) const {
+    xyz[0] = xyz[1] = xyz[2] = 0.;
+    for (const_sample_iterator itr = samples.begin(); itr != samples.end();   ++itr){
+      if( itr->first > CIEstart && itr->first < CIEend){
+	float curVal = defaultScale;
+	if(!samples.empty())
+	  curVal = itr->second;
+	xyz[0] += XWeight[itr->first - CIEstart] * curVal ;
+	xyz[1] += YWeight[itr->first - CIEstart] * curVal ;
+	xyz[2] += ZWeight[itr->first - CIEstart] * curVal ;
       }
-	return *this;
     }
-    Spectrum operator+(const Spectrum &s2) const {
-		//printf("attempting add\n");
-      Spectrum ret = *this;
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	  {
-		  ret.c[i] += s2.c[i];
-		 // printf("adding %d\n", i);
-	  }
-      return ret;
-    }
-    Spectrum operator-(const Spectrum &s2) const {
-      Spectrum ret = *this;
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	ret.c[i] -= s2.c[i];
-      return ret;
-    }
-    Spectrum operator/(const Spectrum &s2) const {
-      Spectrum ret = *this;
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	ret.c[i] /= s2.c[i];
-      return ret;
-    }
-    Spectrum operator*(const Spectrum &sp) const {
-      Spectrum ret = *this;
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	ret.c[i] *= sp.c[i];
-      return ret;
-    }
-    Spectrum &operator*=(const Spectrum &sp) {
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	c[i] *= sp.c[i];
-      return *this;
-    }
-    Spectrum operator*(float a) const {
-      Spectrum ret = *this;
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	ret.c[i] *= a;
-      return ret;
-    }
-    Spectrum &operator*=(float a) {
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	c[i] *= a;
-      return *this;
-    }
-    friend inline
-      Spectrum operator*(float a, const Spectrum &s) {
-      return s * a;
-    }
-    Spectrum operator/(float a) const {
-      return *this * (1.f / a);
-    }
-    Spectrum &operator/=(float a) {
-      float inv = 1.f / a;
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	c[i] *= inv;
-      return *this;
-    }
-    void AddWeighted(float w, const Spectrum &s) {
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	c[i] += w * s.c[i];
-    }
-    bool operator==(const Spectrum &sp) const {
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	if (c[i] != sp.c[i]) return false;
-      return true;
-    }
-    bool operator!=(const Spectrum &sp) const {
-      return !(*this == sp);
-    }
-    bool Black() const {
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	if (c[i] != 0.) return false;
-      return true;
-    }
-    Spectrum Sqrt() const {
-      Spectrum ret;
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	ret.c[i] = sqrtf(c[i]);
-      return ret;
-    }
-    Spectrum Pow(const Spectrum &e) const {
-      Spectrum ret;
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	ret.c[i] = c[i] > 0 ? powf(c[i], e.c[i]) : 0.f;
-      return ret;
-    }
-    Spectrum operator-() const {
-      Spectrum ret;
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	ret.c[i] = -c[i];
-      return ret;
-    }
-    friend Spectrum Exp(const Spectrum &s) {
-      Spectrum ret;
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	ret.c[i] = expf(s.c[i]);
-      return ret;
-    }
-    Spectrum Clamp(float low = 0.f,
-		   float high = INFINITY) const {
-      Spectrum ret;
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	ret.c[i] = ::Clamp(c[i], low, high);
-      return ret;
-    }
-    bool IsNaN() const {
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	if (isnan(c[i])) return true;
-      return false;
-    }
-    void Print(FILE *f) const {
-      for (int i = 0; i < SPECTRUM_SAMPLES; ++i)
-	fprintf(f, "%f ", c[i]);
-    }
-    void XYZ(float xyz[3]) const {
-      xyz[0] = xyz[1] = xyz[2] = 0.;
-      for (int i = SPECTRUM_START; i < SPECTRUM_END; ++i) {
-	if( i > CIEstart && i < CIEend){
-	  xyz[0] += XWeight[i-CIEstart] * c[i-SPECTRUM_START];
-	  xyz[1] += YWeight[i-CIEstart] * c[i-SPECTRUM_START];
-	  xyz[2] += ZWeight[i-CIEstart] * c[i-SPECTRUM_START];
-	}
+  }
+
+  float y() const {
+    float v = 0.;
+    for (const_sample_iterator itr = samples.begin(); itr != samples.end();   ++itr){
+      if( itr->first > CIEstart && itr->first < CIEend){
+	float curVal = defaultScale;
+	if(!samples.empty())
+	  curVal = itr->second;
+	v += YWeight[itr->first - CIEstart] * curVal ;
       }
     }
-    float y() const {
-      float v = 0.;
-      for (int i = SPECTRUM_START; i < SPECTRUM_END; ++i) 
-	  {
-		if( i > CIEstart && i < CIEend){
-		  v += YWeight[i-CIEstart] * c[i-SPECTRUM_START];
-		}
-      }
-		return v;
-    }
-    bool operator<(const Spectrum &s2) const {
-      return y() < s2.y();
-    }
-    friend class ParamSet;
+    return v;
+  }
+  bool operator<(const Spectrum &s2) const {
+    return y() < s2.y();
+  }
+  friend class ParamSet;
 	
-    // Spectrum Public Data
-    static const int CIEstart = 360;
-    static const int CIEend = 830;
-    static const int nCIE = CIEend-CIEstart+1;
-    static const float CIE_X[nCIE];
-    static const float CIE_Y[nCIE];
-    static const float CIE_Z[nCIE];
-  private:
-    // Spectrum Private Data
-    float c[SPECTRUM_SAMPLES];
-    static float XWeight[COLOR_SAMPLES];
-    static float YWeight[COLOR_SAMPLES];
-    static float ZWeight[COLOR_SAMPLES];
-    friend Spectrum FromXYZ(float x, float y, float z);
-  };
+  // Spectrum Public Data
+  static const int CIEstart = 360;
+  static const int CIEend = 830;
+  static const int nCIE = CIEend-CIEstart+1;
+  static const float CIE_X[nCIE];
+  static const float CIE_Y[nCIE];
+  static const float CIE_Z[nCIE];
+ private:
+  // Spectrum Private Data
+  //float c[SPECTRUM_SAMPLES];
+  map<int, float> samples;
+  float defaultScale;
+  static float XWeight[COLOR_SAMPLES];
+  static float YWeight[COLOR_SAMPLES];
+  static float ZWeight[COLOR_SAMPLES];
+  friend Spectrum FromXYZ(float x, float y, float z);
+};
 #endif // PBRT_COLOR_H
