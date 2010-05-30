@@ -4,15 +4,19 @@ ARCH = $(shell uname)
 
 PBRTDIR=..
 PBRTLIB=$(PBRTDIR)/core/libpbrt.a
-EXRDIR=/opt/local
+EXRDIR=/afs/ir/class/cs348b/exr
+TIFFDIR=/afs/ir/class/cs348b/tiff
+LIBS = -L/usr/lib -L/usr/local/lib -L$(EXRDIR)/lib -L$(TIFFDIR)/lib
+INCLUDES = -I/usr/include -I/usr/local/include -I$(EXRDIR)/include/OpenEXR -I$(TIFFDIR)/include
 OPT=-g
-CXXFLAGS = $(OPT) -I/sw/include -I$(EXRDIR)/include/OpenEXR -I$(EXRDIR)/include/  -I$(PBRTDIR)/core
+CXXFLAGS = $(OPT) $(INCLUDES) -I$(PBRTDIR)/core
 
 ifeq ($(ARCH),Darwin)
-LDFLAGS = -L$(EXRDIR)/lib -L/sw/lib
+LDFLAGS = $(LIBS)
 LDFLAGS += -Wl,-all_load $(PBRTDIR)/core/libpbrt.a 
+CXXFLAGS += -Wno-long-double
 else
-LDFLAGS = -L$(EXRDIR)/lib
+LDFLAGS = $(LIBS)
 LDFLAGS += -Wl,--export-dynamic -Wl,-whole-archive $(PBRTLIB) -Wl,-no-whole-archive 
 endif
 

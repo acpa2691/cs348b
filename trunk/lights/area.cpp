@@ -166,7 +166,7 @@ Spectrum SpectrumFromString(string paramString)
 				L += curSpectrum;
 			}
 		}
-	}
+		}
 	
 	return L;
 }

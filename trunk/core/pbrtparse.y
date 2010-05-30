@@ -517,7 +517,8 @@ static void InitParamSet(ParamSet &ps, int count, const char **tokens,
 			} else if (type == PARAM_TYPE_NORMAL) {
 				ps.AddNormal(name, (Normal *)data, nItems / 3);
 			} else if (type == PARAM_TYPE_COLOR) {
-				ps.AddSpectrum(name, (Spectrum *)data, nItems / COLOR_SAMPLES);
+			  Spectrum spec((float*)data);
+			  ps.AddSpectrum(name,&spec , nItems / COLOR_SAMPLES);
 			} else if (type == PARAM_TYPE_STRING) {
 				string *strings = new string[nItems];
 				for (int j = 0; j < nItems; ++j)
