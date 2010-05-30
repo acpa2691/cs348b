@@ -45,8 +45,36 @@ Spectrum FromXYZ(float x, float y, float z) {
 	c[0] =  3.240479f * x + -1.537150f * y + -0.498535f * z;
 	c[1] = -0.969256f * x +  1.875991f * y +  0.041556f * z;
 	c[2] =  0.055648f * x + -0.204043f * y +  1.057311f * z;
-	return Spectrum(c);
+	Spectrum result = Spectrum(c);
+	result.printSelf();
+	return result;
 }
+
+bool Spectrum::SpectrumTest()
+{
+	printf("hey i'm a spectrum getting tested!\n");
+	
+	Spectrum whitish = Spectrum(0.75f);
+	whitish.setValueAtWavelength(50, 500);
+	whitish.printSelf();
+	
+	Spectrum grayish = Spectrum(0.5f);
+	whitish *= grayish;
+	whitish.printSelf();
+	
+	return true;
+}
+
+void Spectrum::printSelf() const
+{
+	printf("SPECTRUM:");
+	for (const_sample_iterator itr = this->samples.begin(); itr != this->samples.end();
+		 ++itr){
+		printf(" (%d, %f)", itr->first, itr->second);
+    }
+	printf("\n");
+}
+
 const float Spectrum::CIE_X[Spectrum::nCIE] = {
 	// CIE X function values
 	  0.0001299000f, 0.0001458470f, 0.0001638021f, 0.0001840037f,

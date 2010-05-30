@@ -30,6 +30,13 @@
 #include "volume.h"
 // Scene Methods
 void Scene::Render() {
+	if(!Spectrum::SpectrumTest())
+	{
+		printf("FAILED spectrum unit test. NO rendering allowed.\n");
+		return;
+	}else{
+		printf("PASSED spectrum unit test. YES!\n");
+	}
 	// Allocate and initialize _sample_
 	Sample *sample = new Sample(surfaceIntegrator,
 	                            volumeIntegrator,
@@ -56,23 +63,30 @@ void Scene::Render() {
 		float alpha = 1.f;//initialized to count rayWeight 0 as opaque black
 		Spectrum Ls = 0.f;
 		if (rayWeight > 0.f)
+		{
 		  //Ls = rayWeight * Li(ray, sample, &alpha);
 		  Ls = Li(ray, sample, &alpha);
+			//printf("Li Value: ");
+			//Ls.printSelf();
+		}
 		// Issue warning if unexpected radiance value returned
 		if (Ls.IsNaN()) {
 			Error("Not-a-number radiance value returned "
 		          "for image sample.  Setting to black.");
 			Ls = Spectrum(0.f);
+			printf("NAN ALERT\n");
 		}
 		else if (Ls.y() < -1e-5) {
 			Error("Negative luminance value, %g, returned "
 		          "for image sample.  Setting to black.", Ls.y());
 			Ls = Spectrum(0.f);
+			printf("NEGATIVE LUMINANCE ALERT\n");
 		}
 		else if (isinf(Ls.y())) {
 			Error("Infinite luminance value returned "
 		          "for image sample.  Setting to black.");
 			Ls = Spectrum(0.f);
+			printf("INFINITE LUMINANCE ALERT\n");
 		}
 		// Add sample contribution to image
 		camera->film->AddSample(*sample, ray, Ls, alpha);
@@ -121,7 +135,10 @@ const BBox &Scene::WorldBound() const {
 }
 Spectrum Scene::Li(const RayDifferential &ray,
 		const Sample *sample, float *alpha) const {
-  return Spectrum(.1);
+	Spectrum Lo = surfaceIntegrator->Li(this, ray, sample, alpha);
+	Spectrum T = volumeIntegrator->Transmittance(this, ray, sample, alpha);
+	Spectrum Lv = volumeIntegrator->Li(this, ray, sample, alpha);
+	return T * Lo + Lv;
 }
 Spectrum Scene::Transmittance(const Ray &ray) const {
 	return volumeIntegrator->Transmittance(this, ray, NULL, NULL);
