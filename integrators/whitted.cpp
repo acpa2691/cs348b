@@ -76,23 +76,28 @@ Spectrum WhittedIntegrator::Li(const Scene *scene,
 			VisibilityTester visibility;
 			Spectrum Li = scene->lights[i]->Sample_L(p, &wi, &visibility);
 			if (Li.Black()) continue;
+			Spectrum f = bsdf->f(wo, wi);
+			/*
 			Spectrum f = bsdf->f(wo, wi, BxDFType(BSDF_ALL & ~BSDF_FLUORESCENT));
 			if(bsdf->NumComponents(BSDF_FLUORESCENT) > 0)
 			{
 				Bispectrum * fluoro = (Bispectrum*)&(bsdf->f(wo, wi, BxDFType(BSDF_FLUORESCENT)));
 				f += fluoro->output(f);
 			}
+			*/
 			if (!f.Black() && visibility.Unoccluded(scene))
 				L += f * Li * AbsDot(wi, n) * visibility.Transmittance(scene);
 		}
 		if (rayDepth++ < maxDepth) {
 			// Trace rays for specular reflection and refraction
+			Spectrum f = bsdf->Sample_f(wo, &wi, BxDFType(BSDF_REFLECTION | BSDF_SPECULAR));
+			/*
 			Spectrum f = bsdf->Sample_f(wo, &wi, BxDFType(BSDF_REFLECTION | BSDF_SPECULAR & ~BSDF_FLUORESCENT));
 			if(bsdf->NumComponents(BSDF_FLUORESCENT) > 0)
 			{
 				Bispectrum * fluoro = (Bispectrum*)&(bsdf->Sample_f(wo, &wi, BxDFType(BSDF_FLUORESCENT)));
 				f += fluoro->output(f);
-			}
+			}*/
 			if (!f.Black()) {
 				// Compute ray differential _rd_ for specular reflection
 				RayDifferential rd(p, wi);
