@@ -100,8 +100,7 @@ ImageFilm::ImageFilm(int xres, int yres,
 		}
 	}
 }
-void ImageFilm::AddSample(const Sample &sample,
-		const Ray &ray, const Spectrum &L, float alpha) {
+void ImageFilm::AddSample(const Sample &sample, const Ray &ray, const Spectrum &L, float alpha) {
 	// Compute sample's raster extent
 	float dImageX = sample.imageX - 0.5f;
 	float dImageY = sample.imageY - 0.5f;
@@ -133,9 +132,14 @@ void ImageFilm::AddSample(const Sample &sample,
 			// Evaluate filter value at $(x,y)$ pixel
 			int offset = ify[y-y0]*FILTER_TABLE_SIZE + ifx[x-x0];
 			float filterWt = filterTable[offset];
+			//printf("BEFORE add weight : ");
+			//L.printSelf();
 			// Update pixel values with filtered sample contribution
 			Pixel &pixel = (*pixels)(x - xPixelStart, y - yPixelStart);
+			
 			pixel.L.AddWeighted(filterWt, L);
+			//printf("AFTER add weight : ");
+			//pixel.L.printSelf();
 			pixel.alpha += alpha * filterWt;
 			pixel.weightSum += filterWt;
 		}
@@ -179,6 +183,8 @@ void ImageFilm::WriteImage() {
 			rgb[3*offset+2] = bWeight[0]*xyz[0] +
 			                  bWeight[1]*xyz[1] +
 				              bWeight[2]*xyz[2];
+							  
+			printf("now have pixel r:%f g:%f b:%f\n", rgb[3*offset], rgb[3*offset+1], rgb[3*offset+2]);
 			alpha[offset] = (*pixels)(x, y).alpha;
 			// Normalize pixel with weight sum
 			float weightSum = (*pixels)(x, y).weightSum;
@@ -192,6 +198,8 @@ void ImageFilm::WriteImage() {
 					Clamp(rgb[3*offset+2] * invWt, 0.f, INFINITY);
 				alpha[offset] = Clamp(alpha[offset] * invWt, 0.f, 1.f);
 			}
+			printf("now WEIGHTED pixel r:%f g:%f b:%f\n", rgb[3*offset], rgb[3*offset+1], rgb[3*offset+2]);
+			
 			// Compute premultiplied alpha color
 			if (premultiplyAlpha) {
 				rgb[3*offset  ] *= alpha[offset];

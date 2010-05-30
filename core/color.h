@@ -35,6 +35,10 @@
 //#define SPECTRUM_END SPECTRUM_START + SPECTRUM_SAMPLES
 //#define SPECTRUM_SAMPLES (SPECTRUM_END - SPECTRUM_START + 1)
 
+#define WAVELENGTH_RED 650
+#define WAVELENGTH_GREEN 510
+#define WAVELENGTH_BLUE 475
+
 using namespace std;
 typedef map<int,float>::iterator sample_iterator;
 typedef map<int,float>::const_iterator const_sample_iterator;
@@ -46,16 +50,16 @@ class COREDLL Spectrum {
 
   Spectrum(float v = 0.f) {
     defaultScale = v;
-    samples[438]= defaultScale;
-    samples[546] = defaultScale;
-    samples[700] = defaultScale;
+    samples[WAVELENGTH_BLUE]= defaultScale;
+    samples[WAVELENGTH_GREEN] = defaultScale;
+    samples[WAVELENGTH_RED] = defaultScale;
   }
   //cs needs to have sive SPECTRUM_SAMPLES
   Spectrum(float  cs[3]) {
     defaultScale = 0.f;
-    samples[438]= cs[2];
-    samples[546] = cs[1];
-    samples[700] = cs[0];
+    samples[WAVELENGTH_BLUE]= cs[2];
+    samples[WAVELENGTH_GREEN] = cs[1];
+    samples[WAVELENGTH_RED] = cs[0];
 
   }
   
@@ -69,10 +73,12 @@ class COREDLL Spectrum {
     float coeff = scale / sqrt(2*3.145*var);
     float invTwoVar = -1.f / (2.f*var);
     for(int lambda = minLambda; lambda < maxLambda; lambda ++){
-      samples[lambda] = coeff * expf(invTwoVar * (lambda - mean)*(lambda-mean));
+      setValueAtWavelength(coeff * expf(invTwoVar * (lambda - mean)*(lambda-mean)), lambda);
     }
   }
 	
+  static bool SpectrumTest();
+  void printSelf() const;
 
   friend ostream &operator<<(ostream &, const Spectrum &);
 
@@ -94,15 +100,15 @@ class COREDLL Spectrum {
       if(before == samples.begin() || after == samples.end())
 	return defaultScale;
       
-      return (lambda - before->first) * (after->second -after->first)/
-	(before->second - before->first);
+      return (lambda - before->first) * (after->second - before->second)/
+	(after->first - before->first);
     }
   }
 
   Spectrum &operator+=(const Spectrum &s2) {
     for (const_sample_iterator itr = s2.samples.begin(); itr != s2.samples.end();
 	 ++itr){
-      samples[itr->first] = itr->second + getValueAtWavelength(itr->first);
+      setValueAtWavelength(itr->second + getValueAtWavelength(itr->first), itr->first);
     }
     return *this;
   }
@@ -111,7 +117,7 @@ class COREDLL Spectrum {
     Spectrum ret = *this;
     for (const_sample_iterator itr = s2.samples.begin(); itr != s2.samples.end();
 	 ++itr){
-      ret.samples[itr->first] = itr->second + ret.getValueAtWavelength(itr->first);
+      ret.setValueAtWavelength(itr->second + ret.getValueAtWavelength(itr->first), itr->first);
     }
     return ret;
   }
@@ -119,7 +125,7 @@ class COREDLL Spectrum {
     Spectrum ret = *this;
     for (const_sample_iterator itr = s2.samples.begin(); itr != s2.samples.end();
 	 ++itr){
-      ret.samples[itr->first] = ret.getValueAtWavelength(itr->first) - itr->second;
+      ret.setValueAtWavelength(ret.getValueAtWavelength(itr->first) - itr->second, itr->first);
     }
     return ret;
   }
@@ -127,7 +133,7 @@ class COREDLL Spectrum {
     Spectrum ret = *this;
     for (const_sample_iterator itr = s2.samples.begin(); itr != s2.samples.end();
 	 ++itr){
-      ret.samples[itr->first] =  ret.getValueAtWavelength(itr->first)/itr->second;
+      ret.setValueAtWavelength(ret.getValueAtWavelength(itr->first)/itr->second, itr->first);
     }
     return ret;
   }
@@ -135,14 +141,14 @@ class COREDLL Spectrum {
     Spectrum ret = *this;
     for (const_sample_iterator itr = sp.samples.begin(); itr != sp.samples.end();
 	 ++itr){
-      ret.samples[itr->first] =  ret.getValueAtWavelength(itr->first)*itr->second;
+      ret.setValueAtWavelength(ret.getValueAtWavelength(itr->first)*itr->second, itr->first);
     }
     return ret;
   }
   Spectrum &operator*=(const Spectrum &sp) {
     for (const_sample_iterator itr = sp.samples.begin(); itr != sp.samples.end();
 	 ++itr){
-      samples[itr->first] =  getValueAtWavelength(itr->first)*itr->second;
+      setValueAtWavelength(getValueAtWavelength(itr->first)*itr->second, itr->first);
     }
     return *this;
   }
@@ -150,14 +156,14 @@ class COREDLL Spectrum {
     Spectrum ret = *this;
     for (const_sample_iterator itr = samples.begin(); itr != samples.end();
 	 ++itr){
-      ret.samples[itr->first] =  ret.getValueAtWavelength(itr->first)*a;
+      ret.setValueAtWavelength(ret.getValueAtWavelength(itr->first)*a, itr->first);
     }
     return ret;
   }
   Spectrum &operator*=(float a) {
     for (sample_iterator itr = samples.begin(); itr != samples.end();
 	 ++itr){
-     samples[itr->first] =  getValueAtWavelength(itr->first)*a;
+     setValueAtWavelength(getValueAtWavelength(itr->first)*a, itr->first);
     }
     return *this;
   }
@@ -172,14 +178,19 @@ class COREDLL Spectrum {
     float inv = 1.f / a;
     for (sample_iterator itr = samples.begin(); itr != samples.end();
 	 ++itr){
-      samples[itr->first] *= inv;
+      setValueAtWavelength(getValueAtWavelength(itr->first)* inv, itr->first);
     }
     return *this;
   }
   void AddWeighted(float w, const Spectrum &s) {
-    for (const_sample_iterator itr = s.samples.begin(); itr != s.samples.end();
-	 ++itr)
-      samples[itr->first] = getValueAtWavelength(itr->first) * itr->second;
+	  //printf("before addWeighted: ");
+	  //printSelf();
+    for (const_sample_iterator itr = s.samples.begin(); itr != s.samples.end(); ++itr){
+		setValueAtWavelength(s.getValueAtWavelength(itr->first) * w + getValueAtWavelength(itr->first), itr->first);
+	}
+	  
+	  //printf("after addWeighted: ");
+	  //printSelf();
   }
   bool operator==(const Spectrum &sp) const {
     const_sample_iterator itr1, itr2;
@@ -206,7 +217,7 @@ class COREDLL Spectrum {
     for (const_sample_iterator itr = samples.begin(); itr !=
 	   samples.end(); ++itr){
       int lambda = itr->first;
-      ret.samples[lambda] = sqrtf(samples.find(lambda)->second);
+      ret.setValueAtWavelength(sqrtf(samples.find(lambda)->second), lambda);
     }
     return ret;
   }
@@ -216,7 +227,7 @@ class COREDLL Spectrum {
     ++itr){
       float lambda = itr->first;
       float curVal = getValueAtWavelength(lambda);
-      ret.samples[lambda] =   curVal > 0.f ? curVal : 0.f;
+      ret.setValueAtWavelength(curVal > 0.f ? curVal : 0.f, lambda);
     }
     return ret;
   }
@@ -224,7 +235,7 @@ class COREDLL Spectrum {
     Spectrum ret;
     for (const_sample_iterator itr = samples.begin(); itr != samples.end();
 	 ++itr){
-      ret.samples[itr->first] = -ret.getValueAtWavelength(itr->first);
+      ret.setValueAtWavelength(-ret.getValueAtWavelength(itr->first), itr->first);
     }
     return ret;
   }
@@ -232,14 +243,14 @@ class COREDLL Spectrum {
   friend Spectrum Exp(const Spectrum &s) {
     Spectrum ret;
     for (const_sample_iterator itr = s.samples.begin(); itr != s.samples.end(); ++itr)
-      ret.samples[itr->first] = expf(itr->second);
+      ret.setValueAtWavelength(expf(itr->second), itr->first);
     return ret;
   }
   Spectrum Clamp(float low = 0.f,
 		 float high = INFINITY) const {
     Spectrum ret;
     for (const_sample_iterator itr = samples.begin(); itr != samples.end(); ++itr)
-      ret.samples[itr->first] = ::Clamp(itr->second,low,high);
+      ret.setValueAtWavelength(::Clamp(itr->second,low,high), itr->first);
     return ret;
   }
   bool IsNaN() const {
@@ -254,17 +265,20 @@ class COREDLL Spectrum {
 
   void XYZ(float xyz[3]) const {
     xyz[0] = xyz[1] = xyz[2] = 0.;
+	  printf("XYZ printing:");
     for (const_sample_iterator itr = samples.begin(); itr != samples.end();   ++itr){
       if( itr->first > CIEstart && itr->first < CIEend){
-	float curVal = defaultScale;
-	float curLambda = itr->first;
-	if(!samples.empty())
-	  curVal = itr->second;
-	xyz[0] += XWeight[itr->first - CIEstart] * curVal ;
-	xyz[1] += YWeight[itr->first - CIEstart] * curVal ;
-	xyz[2] += ZWeight[itr->first - CIEstart] * curVal ;
+	printf(" (%d, %f)", itr->first, itr->second);
+	float curVal = itr->second;
+	int curLambda = itr->first;
+		  printf(" cie x:%f y:%f z:%f ", CIE_X[curLambda - CIEstart],CIE_Y[curLambda - CIEstart],CIE_Z[curLambda - CIEstart]);
+	xyz[0] += CIE_X[curLambda - CIEstart] * curVal ;
+	xyz[1] += CIE_Y[curLambda - CIEstart] * curVal ;
+	xyz[2] += CIE_Z[curLambda - CIEstart] * curVal ;
       }
     }
+	  printf("\n");
+	  printf("XYZ x:%f y:%f z:%f \n", xyz[0], xyz[1], xyz[2]);
   }
 
   float y() const {
@@ -274,7 +288,7 @@ class COREDLL Spectrum {
 	float curVal = defaultScale;
 	if(!samples.empty())
 	  curVal = itr->second;
-	v += YWeight[itr->first - CIEstart] * curVal ;
+	v += CIE_Y[itr->first - CIEstart] * curVal ;
       }
     }
     return v;
