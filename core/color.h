@@ -33,7 +33,7 @@
 //#define SPECTRUM_SPACING 1
 //#define SPECTRUM_START CIEstart
 //#define SPECTRUM_END SPECTRUM_START + SPECTRUM_SAMPLES
-#define SPECTRUM_SAMPLES (SPECTRUM_END - SPECTRUM_START + 1)
+//#define SPECTRUM_SAMPLES (SPECTRUM_END - SPECTRUM_START + 1)
 
 using namespace std;
 typedef map<int,float>::iterator sample_iterator;
@@ -257,6 +257,7 @@ class COREDLL Spectrum {
     for (const_sample_iterator itr = samples.begin(); itr != samples.end();   ++itr){
       if( itr->first > CIEstart && itr->first < CIEend){
 	float curVal = defaultScale;
+	float curLambda = itr->first;
 	if(!samples.empty())
 	  curVal = itr->second;
 	xyz[0] += XWeight[itr->first - CIEstart] * curVal ;

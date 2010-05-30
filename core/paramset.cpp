@@ -423,9 +423,10 @@ string ParamSet::ToString() const {
 		ret += item->name;
 		ret += string("\"");
 		ret += string(" [");
-		for (j = 0; j < nPrint; ++j)
+		/*for (j = 0; j < nPrint; ++j)
 			bufp += snprintf(bufp, bufEnd - bufp, "%.8g %.8g %.8g ", item->data[j].c[0],
 				item->data[j].c[1], item->data[j].c[2]);
+		*/
 		ret += buf;
 		ret += string("] ");
 	}

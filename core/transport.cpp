@@ -125,7 +125,8 @@ Spectrum EstimateDirect(const Scene *scene,
 		const Normal &n, const Vector &wo,
 		BSDF *bsdf, const Sample *sample, int lightSamp,
 		int bsdfSamp, int bsdfComponent, u_int sampleNum) {
-	Spectrum Ld(0.);
+  Spectrum Ld = Spectrum(0.f);
+
 	// Find light and BSDF sample values for direct lighting estimate
 	float ls1, ls2, bs1, bs2, bcs;
 	if (lightSamp != -1 && bsdfSamp != -1 &&

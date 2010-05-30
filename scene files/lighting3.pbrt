@@ -4,7 +4,7 @@
 # of the file containing the result of rendering
 #
 Film "image" "string filename" ["lighting3.exr"]
-	"integer xresolution" [200] "integer yresolution" [200]
+	"integer xresolution" [100] "integer yresolution" [100]
 
 #
 # Sampling specification: PBRT will shoot 2 samples rays per pixel.
@@ -36,7 +36,7 @@ WorldBegin
 # the scene
 #
 
-LightSource "spot" "color I" [50 50 50] "point from" [-2.5 0 3.9375] "point to" [0 0 0] "float coneangle" [60]
+#LightSource "spot" "color I" [50 50 50] "point from" [-2.5 0 3.9375] "point to" [0 0 0] "float coneangle" [60]
 
 
 # Arealight source: Currently commented out, but you will use area

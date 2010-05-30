@@ -56,7 +56,8 @@ void Scene::Render() {
 		float alpha = 1.f;//initialized to count rayWeight 0 as opaque black
 		Spectrum Ls = 0.f;
 		if (rayWeight > 0.f)
-			Ls = rayWeight * Li(ray, sample, &alpha);
+		  //Ls = rayWeight * Li(ray, sample, &alpha);
+		  Ls = Li(ray, sample, &alpha);
 		// Issue warning if unexpected radiance value returned
 		if (Ls.IsNaN()) {
 			Error("Not-a-number radiance value returned "
@@ -120,10 +121,7 @@ const BBox &Scene::WorldBound() const {
 }
 Spectrum Scene::Li(const RayDifferential &ray,
 		const Sample *sample, float *alpha) const {
-	Spectrum Lo = surfaceIntegrator->Li(this, ray, sample, alpha);
-	Spectrum T = volumeIntegrator->Transmittance(this, ray, sample, alpha);
-	Spectrum Lv = volumeIntegrator->Li(this, ray, sample, alpha);
-	return T * Lo + Lv;
+  return Spectrum(.1);
 }
 Spectrum Scene::Transmittance(const Ray &ray) const {
 	return volumeIntegrator->Transmittance(this, ray, NULL, NULL);

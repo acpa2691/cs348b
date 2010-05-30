@@ -1,24 +1,23 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton implementation for Bison's Yacc-like parsers in C
-
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
+   
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
+   
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -29,7 +28,7 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-
+   
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
@@ -47,7 +46,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.3"
+#define YYBISON_VERSION "2.4.1"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -55,103 +54,20 @@
 /* Pure parsers.  */
 #define YYPURE 0
 
+/* Push parsers.  */
+#define YYPUSH 0
+
+/* Pull parsers.  */
+#define YYPULL 1
+
 /* Using locations.  */
 #define YYLSP_NEEDED 0
 
 
 
-/* Tokens.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     STRING = 258,
-     ID = 259,
-     NUM = 260,
-     LBRACK = 261,
-     RBRACK = 262,
-     ACCELERATOR = 263,
-     AREALIGHTSOURCE = 264,
-     ATTRIBUTEBEGIN = 265,
-     ATTRIBUTEEND = 266,
-     CAMERA = 267,
-     CONCATTRANSFORM = 268,
-     COORDINATESYSTEM = 269,
-     COORDSYSTRANSFORM = 270,
-     FILM = 271,
-     IDENTITY = 272,
-     LIGHTSOURCE = 273,
-     LOOKAT = 274,
-     MATERIAL = 275,
-     OBJECTBEGIN = 276,
-     OBJECTEND = 277,
-     OBJECTINSTANCE = 278,
-     PIXELFILTER = 279,
-     REVERSEORIENTATION = 280,
-     ROTATE = 281,
-     SAMPLER = 282,
-     SCALE = 283,
-     SEARCHPATH = 284,
-     SHAPE = 285,
-     SURFACEINTEGRATOR = 286,
-     TEXTURE = 287,
-     TRANSFORMBEGIN = 288,
-     TRANSFORMEND = 289,
-     TRANSFORM = 290,
-     TRANSLATE = 291,
-     VOLUME = 292,
-     VOLUMEINTEGRATOR = 293,
-     WORLDBEGIN = 294,
-     WORLDEND = 295,
-     HIGH_PRECEDENCE = 296
-   };
-#endif
-/* Tokens.  */
-#define STRING 258
-#define ID 259
-#define NUM 260
-#define LBRACK 261
-#define RBRACK 262
-#define ACCELERATOR 263
-#define AREALIGHTSOURCE 264
-#define ATTRIBUTEBEGIN 265
-#define ATTRIBUTEEND 266
-#define CAMERA 267
-#define CONCATTRANSFORM 268
-#define COORDINATESYSTEM 269
-#define COORDSYSTRANSFORM 270
-#define FILM 271
-#define IDENTITY 272
-#define LIGHTSOURCE 273
-#define LOOKAT 274
-#define MATERIAL 275
-#define OBJECTBEGIN 276
-#define OBJECTEND 277
-#define OBJECTINSTANCE 278
-#define PIXELFILTER 279
-#define REVERSEORIENTATION 280
-#define ROTATE 281
-#define SAMPLER 282
-#define SCALE 283
-#define SEARCHPATH 284
-#define SHAPE 285
-#define SURFACEINTEGRATOR 286
-#define TEXTURE 287
-#define TRANSFORMBEGIN 288
-#define TRANSFORMEND 289
-#define TRANSFORM 290
-#define TRANSLATE 291
-#define VOLUME 292
-#define VOLUMEINTEGRATOR 293
-#define WORLDBEGIN 294
-#define WORLDEND 295
-#define HIGH_PRECEDENCE 296
-
-
-
-
 /* Copy the first part of user declarations.  */
+
+/* Line 189 of yacc.c  */
 #line 24 "core/pbrtparse.y"
 
 #include "api.h"
@@ -264,6 +180,9 @@ static bool lookupType(const char *token, int *type, string &name);
 }
 
 
+/* Line 189 of yacc.c  */
+#line 185 "core/pbrtparse.cpp"
+
 /* Enabling traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 1
@@ -282,29 +201,84 @@ static bool lookupType(const char *token, int *type, string &name);
 # define YYTOKEN_TABLE 0
 #endif
 
+
+/* Tokens.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+   /* Put the tokens into the symbol table, so that GDB and other debuggers
+      know about them.  */
+   enum yytokentype {
+     STRING = 258,
+     ID = 259,
+     NUM = 260,
+     LBRACK = 261,
+     RBRACK = 262,
+     ACCELERATOR = 263,
+     AREALIGHTSOURCE = 264,
+     ATTRIBUTEBEGIN = 265,
+     ATTRIBUTEEND = 266,
+     CAMERA = 267,
+     CONCATTRANSFORM = 268,
+     COORDINATESYSTEM = 269,
+     COORDSYSTRANSFORM = 270,
+     FILM = 271,
+     IDENTITY = 272,
+     LIGHTSOURCE = 273,
+     LOOKAT = 274,
+     MATERIAL = 275,
+     OBJECTBEGIN = 276,
+     OBJECTEND = 277,
+     OBJECTINSTANCE = 278,
+     PIXELFILTER = 279,
+     REVERSEORIENTATION = 280,
+     ROTATE = 281,
+     SAMPLER = 282,
+     SCALE = 283,
+     SEARCHPATH = 284,
+     SHAPE = 285,
+     SURFACEINTEGRATOR = 286,
+     TEXTURE = 287,
+     TRANSFORMBEGIN = 288,
+     TRANSFORMEND = 289,
+     TRANSFORM = 290,
+     TRANSLATE = 291,
+     VOLUME = 292,
+     VOLUMEINTEGRATOR = 293,
+     WORLDBEGIN = 294,
+     WORLDEND = 295,
+     HIGH_PRECEDENCE = 296
+   };
+#endif
+
+
+
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 135 "core/pbrtparse.y"
 {
+
+/* Line 214 of yacc.c  */
+#line 135 "core/pbrtparse.y"
+
 char string[1024];
 float num;
 ParamArray *ribarray;
-}
-/* Line 193 of yacc.c.  */
-#line 295 "core/pbrtparse.cpp"
-	YYSTYPE;
+
+
+
+/* Line 214 of yacc.c  */
+#line 270 "core/pbrtparse.cpp"
+} YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
-
 
 
 /* Copy the second part of user declarations.  */
 
 
-/* Line 216 of yacc.c.  */
-#line 308 "core/pbrtparse.cpp"
+/* Line 264 of yacc.c  */
+#line 282 "core/pbrtparse.cpp"
 
 #ifdef short
 # undef short
@@ -354,7 +328,7 @@ typedef short int yytype_int16;
 #define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
 
 #ifndef YY_
-# if defined YYENABLE_NLS && YYENABLE_NLS
+# if YYENABLE_NLS
 #  if ENABLE_NLS
 #   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
 #   define YY_(msgid) dgettext ("bison-runtime", msgid)
@@ -379,14 +353,14 @@ typedef short int yytype_int16;
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static int
-YYID (int i)
+YYID (int yyi)
 #else
 static int
-YYID (i)
-    int i;
+YYID (yyi)
+    int yyi;
 #endif
 {
-  return i;
+  return yyi;
 }
 #endif
 
@@ -467,9 +441,9 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  yytype_int16 yyss;
-  YYSTYPE yyvs;
-  };
+  yytype_int16 yyss_alloc;
+  YYSTYPE yyvs_alloc;
+};
 
 /* The size of the maximum gap between one aligned stack and the next.  */
 # define YYSTACK_GAP_MAXIMUM (sizeof (union yyalloc) - 1)
@@ -503,12 +477,12 @@ union yyalloc
    elements in the stack, and YYPTR gives the new location of the
    stack.  Advance YYPTR to a properly aligned location for the next
    stack.  */
-# define YYSTACK_RELOCATE(Stack)					\
+# define YYSTACK_RELOCATE(Stack_alloc, Stack)				\
     do									\
       {									\
 	YYSIZE_T yynewbytes;						\
-	YYCOPY (&yyptr->Stack, Stack, yysize);				\
-	Stack = &yyptr->Stack;						\
+	YYCOPY (&yyptr->Stack_alloc, Stack, yysize);			\
+	Stack = &yyptr->Stack_alloc;					\
 	yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAXIMUM; \
 	yyptr += yynewbytes / sizeof (*yyptr);				\
       }									\
@@ -864,7 +838,7 @@ while (YYID (0))
    we won't break user code: when these are the locations we know.  */
 
 #ifndef YY_LOCATION_PRINT
-# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+# if YYLTYPE_IS_TRIVIAL
 #  define YY_LOCATION_PRINT(File, Loc)			\
      fprintf (File, "%d.%d-%d.%d",			\
 	      (Loc).first_line, (Loc).first_column,	\
@@ -975,17 +949,20 @@ yy_symbol_print (yyoutput, yytype, yyvaluep)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_stack_print (yytype_int16 *bottom, yytype_int16 *top)
+yy_stack_print (yytype_int16 *yybottom, yytype_int16 *yytop)
 #else
 static void
-yy_stack_print (bottom, top)
-    yytype_int16 *bottom;
-    yytype_int16 *top;
+yy_stack_print (yybottom, yytop)
+    yytype_int16 *yybottom;
+    yytype_int16 *yytop;
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
-  for (; bottom <= top; ++bottom)
-    YYFPRINTF (stderr, " %d", *bottom);
+  for (; yybottom <= yytop; yybottom++)
+    {
+      int yybot = *yybottom;
+      YYFPRINTF (stderr, " %d", yybot);
+    }
   YYFPRINTF (stderr, "\n");
 }
 
@@ -1019,11 +996,11 @@ yy_reduce_print (yyvsp, yyrule)
   /* The symbols being reduced.  */
   for (yyi = 0; yyi < yynrhs; yyi++)
     {
-      fprintf (stderr, "   $%d = ", yyi + 1);
+      YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(yyvsp[(yyi + 1) - (yynrhs)])
 		       		       );
-      fprintf (stderr, "\n");
+      YYFPRINTF (stderr, "\n");
     }
 }
 
@@ -1303,10 +1280,8 @@ yydestruct (yymsg, yytype, yyvaluep)
 	break;
     }
 }
-
 
 /* Prevent warnings from -Wmissing-prototypes.  */
-
 #ifdef YYPARSE_PARAM
 #if defined __STDC__ || defined __cplusplus
 int yyparse (void *YYPARSE_PARAM);
@@ -1322,11 +1297,10 @@ int yyparse ();
 #endif /* ! YYPARSE_PARAM */
 
 
-
-/* The look-ahead symbol.  */
+/* The lookahead symbol.  */
 int yychar;
 
-/* The semantic value of the look-ahead symbol.  */
+/* The semantic value of the lookahead symbol.  */
 YYSTYPE yylval;
 
 /* Number of syntax errors so far.  */
@@ -1334,9 +1308,9 @@ int yynerrs;
 
 
 
-/*----------.
-| yyparse.  |
-`----------*/
+/*-------------------------.
+| yyparse or yypush_parse.  |
+`-------------------------*/
 
 #ifdef YYPARSE_PARAM
 #if (defined __STDC__ || defined __C99__FUNC__ \
@@ -1360,14 +1334,39 @@ yyparse ()
 #endif
 #endif
 {
-  
-  int yystate;
+
+
+    int yystate;
+    /* Number of tokens to shift before error messages enabled.  */
+    int yyerrstatus;
+
+    /* The stacks and their tools:
+       `yyss': related to states.
+       `yyvs': related to semantic values.
+
+       Refer to the stacks thru separate pointers, to allow yyoverflow
+       to reallocate them elsewhere.  */
+
+    /* The state stack.  */
+    yytype_int16 yyssa[YYINITDEPTH];
+    yytype_int16 *yyss;
+    yytype_int16 *yyssp;
+
+    /* The semantic value stack.  */
+    YYSTYPE yyvsa[YYINITDEPTH];
+    YYSTYPE *yyvs;
+    YYSTYPE *yyvsp;
+
+    YYSIZE_T yystacksize;
+
   int yyn;
   int yyresult;
-  /* Number of tokens to shift before error messages enabled.  */
-  int yyerrstatus;
-  /* Look-ahead token as an internal (translated) token number.  */
-  int yytoken = 0;
+  /* Lookahead token as an internal (translated) token number.  */
+  int yytoken;
+  /* The variables used to return semantic value and location from the
+     action routines.  */
+  YYSTYPE yyval;
+
 #if YYERROR_VERBOSE
   /* Buffer for error messages, and its allocated size.  */
   char yymsgbuf[128];
@@ -1375,51 +1374,28 @@ yyparse ()
   YYSIZE_T yymsg_alloc = sizeof yymsgbuf;
 #endif
 
-  /* Three stacks and their tools:
-     `yyss': related to states,
-     `yyvs': related to semantic values,
-     `yyls': related to locations.
-
-     Refer to the stacks thru separate pointers, to allow yyoverflow
-     to reallocate them elsewhere.  */
-
-  /* The state stack.  */
-  yytype_int16 yyssa[YYINITDEPTH];
-  yytype_int16 *yyss = yyssa;
-  yytype_int16 *yyssp;
-
-  /* The semantic value stack.  */
-  YYSTYPE yyvsa[YYINITDEPTH];
-  YYSTYPE *yyvs = yyvsa;
-  YYSTYPE *yyvsp;
-
-
-
 #define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N))
-
-  YYSIZE_T yystacksize = YYINITDEPTH;
-
-  /* The variables used to return semantic value and location from the
-     action routines.  */
-  YYSTYPE yyval;
-
 
   /* The number of symbols on the RHS of the reduced rule.
      Keep to zero when no symbol should be popped.  */
   int yylen = 0;
+
+  yytoken = 0;
+  yyss = yyssa;
+  yyvs = yyvsa;
+  yystacksize = YYINITDEPTH;
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
   yystate = 0;
   yyerrstatus = 0;
   yynerrs = 0;
-  yychar = YYEMPTY;		/* Cause a token to be read.  */
+  yychar = YYEMPTY; /* Cause a token to be read.  */
 
   /* Initialize stack pointers.
      Waste one element of value and location stack
      so that they stay on the same level as the state stack.
      The wasted elements are never initialized.  */
-
   yyssp = yyss;
   yyvsp = yyvs;
 
@@ -1449,7 +1425,6 @@ yyparse ()
 	YYSTYPE *yyvs1 = yyvs;
 	yytype_int16 *yyss1 = yyss;
 
-
 	/* Each stack pointer address is followed by the size of the
 	   data in use in that stack, in bytes.  This used to be a
 	   conditional around just the two extra args, but that might
@@ -1457,7 +1432,6 @@ yyparse ()
 	yyoverflow (YY_("memory exhausted"),
 		    &yyss1, yysize * sizeof (*yyssp),
 		    &yyvs1, yysize * sizeof (*yyvsp),
-
 		    &yystacksize);
 
 	yyss = yyss1;
@@ -1480,9 +1454,8 @@ yyparse ()
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
 	  goto yyexhaustedlab;
-	YYSTACK_RELOCATE (yyss);
-	YYSTACK_RELOCATE (yyvs);
-
+	YYSTACK_RELOCATE (yyss_alloc, yyss);
+	YYSTACK_RELOCATE (yyvs_alloc, yyvs);
 #  undef YYSTACK_RELOCATE
 	if (yyss1 != yyssa)
 	  YYSTACK_FREE (yyss1);
@@ -1493,7 +1466,6 @@ yyparse ()
       yyssp = yyss + yysize - 1;
       yyvsp = yyvs + yysize - 1;
 
-
       YYDPRINTF ((stderr, "Stack size increased to %lu\n",
 		  (unsigned long int) yystacksize));
 
@@ -1503,6 +1475,9 @@ yyparse ()
 
   YYDPRINTF ((stderr, "Entering state %d\n", yystate));
 
+  if (yystate == YYFINAL)
+    YYACCEPT;
+
   goto yybackup;
 
 /*-----------.
@@ -1511,16 +1486,16 @@ yyparse ()
 yybackup:
 
   /* Do appropriate processing given the current state.  Read a
-     look-ahead token if we need one and don't already have one.  */
+     lookahead token if we need one and don't already have one.  */
 
-  /* First try to decide what to do without reference to look-ahead token.  */
+  /* First try to decide what to do without reference to lookahead token.  */
   yyn = yypact[yystate];
   if (yyn == YYPACT_NINF)
     goto yydefault;
 
-  /* Not known => get a look-ahead token if don't already have one.  */
+  /* Not known => get a lookahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid look-ahead symbol.  */
+  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
   if (yychar == YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token: "));
@@ -1552,20 +1527,16 @@ yybackup:
       goto yyreduce;
     }
 
-  if (yyn == YYFINAL)
-    YYACCEPT;
-
   /* Count tokens shifted since error; after three, turn off error
      status.  */
   if (yyerrstatus)
     yyerrstatus--;
 
-  /* Shift the look-ahead token.  */
+  /* Shift the lookahead token.  */
   YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
 
-  /* Discard the shifted token unless it is eof.  */
-  if (yychar != YYEOF)
-    yychar = YYEMPTY;
+  /* Discard the shifted token.  */
+  yychar = YYEMPTY;
 
   yystate = yyn;
   *++yyvsp = yylval;
@@ -1605,12 +1576,16 @@ yyreduce:
   switch (yyn)
     {
         case 2:
+
+/* Line 1455 of yacc.c  */
 #line 158 "core/pbrtparse.y"
     {
 ;}
     break;
 
   case 3:
+
+/* Line 1455 of yacc.c  */
 #line 162 "core/pbrtparse.y"
     {
 	if (cur_array) ArrayFree( cur_array );
@@ -1623,6 +1598,8 @@ yyreduce:
     break;
 
   case 4:
+
+/* Line 1455 of yacc.c  */
 #line 172 "core/pbrtparse.y"
     {
 	cur_array->element_size = sizeof( const char * );
@@ -1630,6 +1607,8 @@ yyreduce:
     break;
 
   case 5:
+
+/* Line 1455 of yacc.c  */
 #line 177 "core/pbrtparse.y"
     {
 	cur_array->element_size = sizeof( float );
@@ -1637,6 +1616,8 @@ yyreduce:
     break;
 
   case 6:
+
+/* Line 1455 of yacc.c  */
 #line 182 "core/pbrtparse.y"
     {
 	(yyval.ribarray) = (yyvsp[(1) - (1)].ribarray);
@@ -1644,6 +1625,8 @@ yyreduce:
     break;
 
   case 7:
+
+/* Line 1455 of yacc.c  */
 #line 186 "core/pbrtparse.y"
     {
 	(yyval.ribarray) = (yyvsp[(1) - (1)].ribarray);
@@ -1651,6 +1634,8 @@ yyreduce:
     break;
 
   case 8:
+
+/* Line 1455 of yacc.c  */
 #line 191 "core/pbrtparse.y"
     {
 	(yyval.ribarray) = (yyvsp[(1) - (1)].ribarray);
@@ -1658,6 +1643,8 @@ yyreduce:
     break;
 
   case 9:
+
+/* Line 1455 of yacc.c  */
 #line 195 "core/pbrtparse.y"
     {
 	(yyval.ribarray) = ArrayDup(cur_array);
@@ -1666,6 +1653,8 @@ yyreduce:
     break;
 
   case 10:
+
+/* Line 1455 of yacc.c  */
 #line 201 "core/pbrtparse.y"
     {
 	(yyval.ribarray) = ArrayDup(cur_array);
@@ -1673,24 +1662,32 @@ yyreduce:
     break;
 
   case 11:
+
+/* Line 1455 of yacc.c  */
 #line 206 "core/pbrtparse.y"
     {
 ;}
     break;
 
   case 12:
+
+/* Line 1455 of yacc.c  */
 #line 210 "core/pbrtparse.y"
     {
 ;}
     break;
 
   case 13:
+
+/* Line 1455 of yacc.c  */
 #line 213 "core/pbrtparse.y"
     {
 ;}
     break;
 
   case 14:
+
+/* Line 1455 of yacc.c  */
 #line 217 "core/pbrtparse.y"
     {
 	char *to_add = strdup((yyvsp[(2) - (2)].string));
@@ -1699,6 +1696,8 @@ yyreduce:
     break;
 
   case 15:
+
+/* Line 1455 of yacc.c  */
 #line 223 "core/pbrtparse.y"
     {
 	(yyval.ribarray) = (yyvsp[(1) - (1)].ribarray);
@@ -1706,6 +1705,8 @@ yyreduce:
     break;
 
   case 16:
+
+/* Line 1455 of yacc.c  */
 #line 227 "core/pbrtparse.y"
     {
 	(yyval.ribarray) = ArrayDup(cur_array);
@@ -1713,6 +1714,8 @@ yyreduce:
     break;
 
   case 17:
+
+/* Line 1455 of yacc.c  */
 #line 232 "core/pbrtparse.y"
     {
 	(yyval.ribarray) = ArrayDup(cur_array);
@@ -1720,24 +1723,32 @@ yyreduce:
     break;
 
   case 18:
+
+/* Line 1455 of yacc.c  */
 #line 237 "core/pbrtparse.y"
     {
 ;}
     break;
 
   case 19:
+
+/* Line 1455 of yacc.c  */
 #line 241 "core/pbrtparse.y"
     {
 ;}
     break;
 
   case 20:
+
+/* Line 1455 of yacc.c  */
 #line 244 "core/pbrtparse.y"
     {
 ;}
     break;
 
   case 21:
+
+/* Line 1455 of yacc.c  */
 #line 248 "core/pbrtparse.y"
     {
 	float to_add = (yyvsp[(2) - (2)].num);
@@ -1746,12 +1757,16 @@ yyreduce:
     break;
 
   case 22:
+
+/* Line 1455 of yacc.c  */
 #line 254 "core/pbrtparse.y"
     {
 ;}
     break;
 
   case 23:
+
+/* Line 1455 of yacc.c  */
 #line 258 "core/pbrtparse.y"
     {
 	cur_paramlist_size = 0;
@@ -1759,18 +1774,24 @@ yyreduce:
     break;
 
   case 24:
+
+/* Line 1455 of yacc.c  */
 #line 263 "core/pbrtparse.y"
     {
 ;}
     break;
 
   case 25:
+
+/* Line 1455 of yacc.c  */
 #line 266 "core/pbrtparse.y"
     {
 ;}
     break;
 
   case 26:
+
+/* Line 1455 of yacc.c  */
 #line 270 "core/pbrtparse.y"
     {
 	void *arg = new char[ (yyvsp[(2) - (2)].ribarray)->nelems * (yyvsp[(2) - (2)].ribarray)->element_size ];
@@ -1791,18 +1812,24 @@ yyreduce:
     break;
 
   case 27:
+
+/* Line 1455 of yacc.c  */
 #line 288 "core/pbrtparse.y"
     {
 ;}
     break;
 
   case 28:
+
+/* Line 1455 of yacc.c  */
 #line 291 "core/pbrtparse.y"
     {
 ;}
     break;
 
   case 29:
+
+/* Line 1455 of yacc.c  */
 #line 295 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -1813,6 +1840,8 @@ yyreduce:
     break;
 
   case 30:
+
+/* Line 1455 of yacc.c  */
 #line 302 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -1823,6 +1852,8 @@ yyreduce:
     break;
 
   case 31:
+
+/* Line 1455 of yacc.c  */
 #line 309 "core/pbrtparse.y"
     {
 	pbrtAttributeBegin();
@@ -1830,6 +1861,8 @@ yyreduce:
     break;
 
   case 32:
+
+/* Line 1455 of yacc.c  */
 #line 313 "core/pbrtparse.y"
     {
 	pbrtAttributeEnd();
@@ -1837,6 +1870,8 @@ yyreduce:
     break;
 
   case 33:
+
+/* Line 1455 of yacc.c  */
 #line 317 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -1847,6 +1882,8 @@ yyreduce:
     break;
 
   case 34:
+
+/* Line 1455 of yacc.c  */
 #line 324 "core/pbrtparse.y"
     {
 	if (VerifyArrayLength( (yyvsp[(2) - (2)].ribarray), 16, "ConcatTransform" ))
@@ -1856,6 +1893,8 @@ yyreduce:
     break;
 
   case 35:
+
+/* Line 1455 of yacc.c  */
 #line 330 "core/pbrtparse.y"
     {
 	pbrtCoordinateSystem( (yyvsp[(2) - (2)].string) );
@@ -1863,6 +1902,8 @@ yyreduce:
     break;
 
   case 36:
+
+/* Line 1455 of yacc.c  */
 #line 334 "core/pbrtparse.y"
     {
 	pbrtCoordSysTransform( (yyvsp[(2) - (2)].string) );
@@ -1870,6 +1911,8 @@ yyreduce:
     break;
 
   case 37:
+
+/* Line 1455 of yacc.c  */
 #line 338 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -1880,6 +1923,8 @@ yyreduce:
     break;
 
   case 38:
+
+/* Line 1455 of yacc.c  */
 #line 345 "core/pbrtparse.y"
     {
 	pbrtIdentity();
@@ -1887,6 +1932,8 @@ yyreduce:
     break;
 
   case 39:
+
+/* Line 1455 of yacc.c  */
 #line 349 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -1897,6 +1944,8 @@ yyreduce:
     break;
 
   case 40:
+
+/* Line 1455 of yacc.c  */
 #line 356 "core/pbrtparse.y"
     {
 	pbrtLookAt((yyvsp[(2) - (10)].num), (yyvsp[(3) - (10)].num), (yyvsp[(4) - (10)].num), (yyvsp[(5) - (10)].num), (yyvsp[(6) - (10)].num), (yyvsp[(7) - (10)].num), (yyvsp[(8) - (10)].num), (yyvsp[(9) - (10)].num), (yyvsp[(10) - (10)].num));
@@ -1904,6 +1953,8 @@ yyreduce:
     break;
 
   case 41:
+
+/* Line 1455 of yacc.c  */
 #line 360 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -1914,6 +1965,8 @@ yyreduce:
     break;
 
   case 42:
+
+/* Line 1455 of yacc.c  */
 #line 367 "core/pbrtparse.y"
     {
 	pbrtObjectBegin((yyvsp[(2) - (2)].string));
@@ -1921,6 +1974,8 @@ yyreduce:
     break;
 
   case 43:
+
+/* Line 1455 of yacc.c  */
 #line 371 "core/pbrtparse.y"
     {
 	pbrtObjectEnd();
@@ -1928,6 +1983,8 @@ yyreduce:
     break;
 
   case 44:
+
+/* Line 1455 of yacc.c  */
 #line 375 "core/pbrtparse.y"
     {
 	pbrtObjectInstance((yyvsp[(2) - (2)].string));
@@ -1935,6 +1992,8 @@ yyreduce:
     break;
 
   case 45:
+
+/* Line 1455 of yacc.c  */
 #line 379 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -1945,6 +2004,8 @@ yyreduce:
     break;
 
   case 46:
+
+/* Line 1455 of yacc.c  */
 #line 386 "core/pbrtparse.y"
     {
 	pbrtReverseOrientation();
@@ -1952,6 +2013,8 @@ yyreduce:
     break;
 
   case 47:
+
+/* Line 1455 of yacc.c  */
 #line 390 "core/pbrtparse.y"
     {
 	pbrtRotate((yyvsp[(2) - (5)].num), (yyvsp[(3) - (5)].num), (yyvsp[(4) - (5)].num), (yyvsp[(5) - (5)].num));
@@ -1959,6 +2022,8 @@ yyreduce:
     break;
 
   case 48:
+
+/* Line 1455 of yacc.c  */
 #line 394 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -1969,6 +2034,8 @@ yyreduce:
     break;
 
   case 49:
+
+/* Line 1455 of yacc.c  */
 #line 401 "core/pbrtparse.y"
     {
 	pbrtScale((yyvsp[(2) - (4)].num), (yyvsp[(3) - (4)].num), (yyvsp[(4) - (4)].num));
@@ -1976,6 +2043,8 @@ yyreduce:
     break;
 
   case 50:
+
+/* Line 1455 of yacc.c  */
 #line 405 "core/pbrtparse.y"
     {
 	pbrtSearchPath((yyvsp[(2) - (2)].string));
@@ -1983,6 +2052,8 @@ yyreduce:
     break;
 
   case 51:
+
+/* Line 1455 of yacc.c  */
 #line 409 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -1993,6 +2064,8 @@ yyreduce:
     break;
 
   case 52:
+
+/* Line 1455 of yacc.c  */
 #line 416 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -2003,6 +2076,8 @@ yyreduce:
     break;
 
   case 53:
+
+/* Line 1455 of yacc.c  */
 #line 423 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -2013,6 +2088,8 @@ yyreduce:
     break;
 
   case 54:
+
+/* Line 1455 of yacc.c  */
 #line 430 "core/pbrtparse.y"
     {
 	pbrtTransformBegin();
@@ -2020,6 +2097,8 @@ yyreduce:
     break;
 
   case 55:
+
+/* Line 1455 of yacc.c  */
 #line 434 "core/pbrtparse.y"
     {
 	pbrtTransformEnd();
@@ -2027,6 +2106,8 @@ yyreduce:
     break;
 
   case 56:
+
+/* Line 1455 of yacc.c  */
 #line 438 "core/pbrtparse.y"
     {
 	if (VerifyArrayLength( (yyvsp[(2) - (2)].ribarray), 16, "Transform" ))
@@ -2036,6 +2117,8 @@ yyreduce:
     break;
 
   case 57:
+
+/* Line 1455 of yacc.c  */
 #line 444 "core/pbrtparse.y"
     {
 	pbrtTranslate((yyvsp[(2) - (4)].num), (yyvsp[(3) - (4)].num), (yyvsp[(4) - (4)].num));
@@ -2043,6 +2126,8 @@ yyreduce:
     break;
 
   case 58:
+
+/* Line 1455 of yacc.c  */
 #line 448 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -2053,6 +2138,8 @@ yyreduce:
     break;
 
   case 59:
+
+/* Line 1455 of yacc.c  */
 #line 455 "core/pbrtparse.y"
     {
 	ParamSet params;
@@ -2063,6 +2150,8 @@ yyreduce:
     break;
 
   case 60:
+
+/* Line 1455 of yacc.c  */
 #line 462 "core/pbrtparse.y"
     {
 	pbrtWorldBegin();
@@ -2070,6 +2159,8 @@ yyreduce:
     break;
 
   case 61:
+
+/* Line 1455 of yacc.c  */
 #line 466 "core/pbrtparse.y"
     {
 	pbrtWorldEnd();
@@ -2077,8 +2168,9 @@ yyreduce:
     break;
 
 
-/* Line 1267 of yacc.c.  */
-#line 2082 "core/pbrtparse.cpp"
+
+/* Line 1455 of yacc.c  */
+#line 2174 "core/pbrtparse.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2088,7 +2180,6 @@ yyreduce:
   YY_STACK_PRINT (yyss, yyssp);
 
   *++yyvsp = yyval;
-
 
   /* Now `shift' the result of the reduction.  Determine what state
      that goes to, based on the state we popped back to and the rule
@@ -2154,7 +2245,7 @@ yyerrlab:
 
   if (yyerrstatus == 3)
     {
-      /* If just tried and failed to reuse look-ahead token after an
+      /* If just tried and failed to reuse lookahead token after an
 	 error, discard it.  */
 
       if (yychar <= YYEOF)
@@ -2171,7 +2262,7 @@ yyerrlab:
 	}
     }
 
-  /* Else will try to reuse look-ahead token after shifting the error
+  /* Else will try to reuse lookahead token after shifting the error
      token.  */
   goto yyerrlab1;
 
@@ -2228,9 +2319,6 @@ yyerrlab1:
       YY_STACK_PRINT (yyss, yyssp);
     }
 
-  if (yyn == YYFINAL)
-    YYACCEPT;
-
   *++yyvsp = yylval;
 
 
@@ -2255,7 +2343,7 @@ yyabortlab:
   yyresult = 1;
   goto yyreturn;
 
-#ifndef yyoverflow
+#if !defined(yyoverflow) || YYERROR_VERBOSE
 /*-------------------------------------------------.
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
@@ -2266,7 +2354,7 @@ yyexhaustedlab:
 #endif
 
 yyreturn:
-  if (yychar != YYEOF && yychar != YYEMPTY)
+  if (yychar != YYEMPTY)
      yydestruct ("Cleanup: discarding lookahead",
 		 yytoken, &yylval);
   /* Do not reclaim the symbols of the rule which action triggered
@@ -2292,6 +2380,8 @@ yyreturn:
 }
 
 
+
+/* Line 1675 of yacc.c  */
 #line 469 "core/pbrtparse.y"
 
 static void InitParamSet(ParamSet &ps, int count, const char **tokens,
@@ -2344,7 +2434,8 @@ static void InitParamSet(ParamSet &ps, int count, const char **tokens,
 			} else if (type == PARAM_TYPE_NORMAL) {
 				ps.AddNormal(name, (Normal *)data, nItems / 3);
 			} else if (type == PARAM_TYPE_COLOR) {
-				ps.AddSpectrum(name, (Spectrum *)data, nItems / COLOR_SAMPLES);
+			  Spectrum spec((float*)data);
+			  ps.AddSpectrum(name,&spec , nItems / COLOR_SAMPLES);
 			} else if (type == PARAM_TYPE_STRING) {
 				string *strings = new string[nItems];
 				for (int j = 0; j < nItems; ++j)
