@@ -30,6 +30,7 @@ Bispectrum::Bispectrum(string &filename)
 	myfile.open(filename.c_str());
 	if (myfile.is_open())
 	{
+		printf("opened file '%s'\n", filename.c_str());
 		int row = 0;
 		string line;
 		while (!myfile.eof())
@@ -57,7 +58,7 @@ Bispectrum::Bispectrum(string &filename)
 			for(unsigned int i = 0; i < tokens.size(); i++)
 			{
 				float currentFloat = atof(tokens.at(i).c_str());
-				//printf("current float: %f\n", currentFloat);
+				printf("current float: %f\n", currentFloat);
 				if(row == 0)
 				{
 					outputIndices[i] = currentFloat;
@@ -65,7 +66,7 @@ Bispectrum::Bispectrum(string &filename)
 				{
 					inputIndices[i] = currentFloat;
 				}else{
-					int curIndex = nOutputIndices*row + i;
+					int curIndex = nOutputIndices*(row-2) + i;
 					data[curIndex] = currentFloat;
 				}
 			}
@@ -81,19 +82,20 @@ Bispectrum::Bispectrum(string &filename)
 Spectrum Bispectrum::output(Spectrum & input)
 {
 	Spectrum result(0.f); 
-	/*
+	
 	for(int i = 0; i < nOutputIndices; i++)
 	{
-		int curBaseIndex = i*nOutputIndices;
+		//int curBaseIndex = i*nOutputIndices;
 		float curOutputWavelength = outputIndices[i];
 		float total = 0.f;
 		for(int k = 0; k < nInputIndices; k++)
 		{
+			int curIndex = k*nOutputIndices+i;
 			float curInputWavelength = inputIndices[k];
-			total += data[curBaseIndex+k]*input.getValueAtWavelength(curInputWavelength);
+			total += data[curIndex]*input.getValueAtWavelength(curInputWavelength);
 		}
 		result.setValueAtWavelength(total, curOutputWavelength);
 	}
-	*/
+	
 	return result;
 }

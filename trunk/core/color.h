@@ -35,9 +35,9 @@
 //#define SPECTRUM_END SPECTRUM_START + SPECTRUM_SAMPLES
 //#define SPECTRUM_SAMPLES (SPECTRUM_END - SPECTRUM_START + 1)
 
-#define WAVELENGTH_RED 650
-#define WAVELENGTH_GREEN 510
-#define WAVELENGTH_BLUE 475
+#define WAVELENGTH_RED 575
+#define WAVELENGTH_GREEN 535
+#define WAVELENGTH_BLUE 445
 
 using namespace std;
 typedef map<int,float>::iterator sample_iterator;
@@ -50,6 +50,12 @@ class COREDLL Spectrum {
 
   Spectrum(float v = 0.f) {
     defaultScale = v;
+	  /*
+	  for(int i = 0; i < nCIE; i++)
+	  {
+		  samples[CIEstart+i] = defaultScale;
+	  }
+	  */
     samples[WAVELENGTH_BLUE]= defaultScale;
     samples[WAVELENGTH_GREEN] = defaultScale;
     samples[WAVELENGTH_RED] = defaultScale;
@@ -60,7 +66,12 @@ class COREDLL Spectrum {
     samples[WAVELENGTH_BLUE]= cs[2];
     samples[WAVELENGTH_GREEN] = cs[1];
     samples[WAVELENGTH_RED] = cs[0];
-
+	  /*
+	  for(int i = 0; i < nCIE; i++)
+	  {
+		  samples[CIEstart+i] = cs[0];
+	  }
+	   */
   }
   
   Spectrum(float mean, float stdev, float scale){
@@ -265,10 +276,10 @@ class COREDLL Spectrum {
 
   void XYZ(float xyz[3]) const {
     xyz[0] = xyz[1] = xyz[2] = 0.;
-	  printf("XYZ printing:");
+	  //printf("XYZ printing:");
     for (const_sample_iterator itr = samples.begin(); itr != samples.end();   ++itr){
       if( itr->first > CIEstart && itr->first < CIEend){
-	printf(" (%d, %f)", itr->first, itr->second);
+	//printf(" (%d, %f)", itr->first, itr->second);
 	float curVal = itr->second;
 	int curLambda = itr->first;
 		  printf(" cie x:%f y:%f z:%f ", CIE_X[curLambda - CIEstart],CIE_Y[curLambda - CIEstart],CIE_Z[curLambda - CIEstart]);
@@ -277,8 +288,8 @@ class COREDLL Spectrum {
 	xyz[2] += CIE_Z[curLambda - CIEstart] * curVal ;
       }
     }
-	  printf("\n");
-	  printf("XYZ x:%f y:%f z:%f \n", xyz[0], xyz[1], xyz[2]);
+	 // printf("\n");
+	  //printf("XYZ x:%f y:%f z:%f \n", xyz[0], xyz[1], xyz[2]);
   }
 
   float y() const {

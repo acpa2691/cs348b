@@ -184,7 +184,7 @@ void ImageFilm::WriteImage() {
 			                  bWeight[1]*xyz[1] +
 				              bWeight[2]*xyz[2];
 							  
-			printf("now have pixel r:%f g:%f b:%f\n", rgb[3*offset], rgb[3*offset+1], rgb[3*offset+2]);
+			//printf("now have pixel r:%f g:%f b:%f\n", rgb[3*offset], rgb[3*offset+1], rgb[3*offset+2]);
 			alpha[offset] = (*pixels)(x, y).alpha;
 			// Normalize pixel with weight sum
 			float weightSum = (*pixels)(x, y).weightSum;
@@ -198,7 +198,7 @@ void ImageFilm::WriteImage() {
 					Clamp(rgb[3*offset+2] * invWt, 0.f, INFINITY);
 				alpha[offset] = Clamp(alpha[offset] * invWt, 0.f, 1.f);
 			}
-			printf("now WEIGHTED pixel r:%f g:%f b:%f\n", rgb[3*offset], rgb[3*offset+1], rgb[3*offset+2]);
+			//printf("now WEIGHTED pixel r:%f g:%f b:%f\n", rgb[3*offset], rgb[3*offset+1], rgb[3*offset+2]);
 			
 			// Compute premultiplied alpha color
 			if (premultiplyAlpha) {

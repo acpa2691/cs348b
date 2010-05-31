@@ -4,7 +4,7 @@
 # of the file containing the result of rendering
 #
 Film "image" "string filename" ["lighting3.exr"]
-	"integer xresolution" [100] "integer yresolution" [100]
+	"integer xresolution" [150] "integer yresolution" [150]
 
 #
 # Sampling specification: PBRT will shoot 2 samples rays per pixel.
@@ -13,7 +13,7 @@ Film "image" "string filename" ["lighting3.exr"]
 # up in your final images.
 #
 
-Sampler "lowdiscrepancy" "integer pixelsamples" [1] 
+Sampler "lowdiscrepancy" "integer pixelsamples" [4] 
 
 #
 # Camera configuration: the camera is located on the Z axis, and is
@@ -76,7 +76,7 @@ AttributeEnd
 # Head model
 #
 
-Material "uber" "color Kd" [1 1 1 ] "color Ks" [.05 .05 .05]
+Material "fluorescent" "color Kd" [1 1 1 ] "color Ks" [.05 .05 .05] "string reradiation" "red_ink.txt"
 AttributeBegin
 Translate 0 -0.2 0
 Rotate 180 0 1 0
