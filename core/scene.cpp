@@ -64,8 +64,8 @@ void Scene::Render() {
 		Spectrum Ls = 0.f;
 		if (rayWeight > 0.f)
 		{
-		  //Ls = rayWeight * Li(ray, sample, &alpha);
-		  Ls = Li(ray, sample, &alpha);
+		  Ls = rayWeight * Li(ray, sample, &alpha);
+		 // Ls = Li(ray, sample, &alpha);
 			//printf("Li Value: ");
 			//Ls.printSelf();
 		}
@@ -74,19 +74,19 @@ void Scene::Render() {
 			Error("Not-a-number radiance value returned "
 		          "for image sample.  Setting to black.");
 			Ls = Spectrum(0.f);
-			printf("NAN ALERT\n");
+			//printf("NAN ALERT\n");
 		}
 		else if (Ls.y() < -1e-5) {
 			Error("Negative luminance value, %g, returned "
 		          "for image sample.  Setting to black.", Ls.y());
 			Ls = Spectrum(0.f);
-			printf("NEGATIVE LUMINANCE ALERT\n");
+			//printf("NEGATIVE LUMINANCE ALERT\n");
 		}
 		else if (isinf(Ls.y())) {
 			Error("Infinite luminance value returned "
 		          "for image sample.  Setting to black.");
 			Ls = Spectrum(0.f);
-			printf("INFINITE LUMINANCE ALERT\n");
+			//printf("INFINITE LUMINANCE ALERT\n");
 		}
 		// Add sample contribution to image
 		camera->film->AddSample(*sample, ray, Ls, alpha);

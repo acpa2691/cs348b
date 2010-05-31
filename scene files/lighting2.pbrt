@@ -4,7 +4,7 @@
 # of the file containing the result of rendering
 #
 Film "image" "string filename" ["lighting2.exr"]
-	"integer xresolution" [400] "integer yresolution" [400]
+	"integer xresolution" [75] "integer yresolution" [75]
 
 #
 # Sampling specification: PBRT will shoot 2 samples rays per pixel.
@@ -13,7 +13,7 @@ Film "image" "string filename" ["lighting2.exr"]
 # up in your final images.
 #
 
-Sampler "lowdiscrepancy" "integer pixelsamples" [16] 
+Sampler "lowdiscrepancy" "integer pixelsamples" [4] 
 
 #
 # Camera configuration: the camera is located on the Z axis, and is
@@ -46,7 +46,7 @@ WorldBegin
 # are shot toward points on the light source to determine shadowing.
 
 AttributeBegin
-  AreaLightSource "area" "color L" [10 10 10] "integer nsamples" [4]
+  AreaLightSource "area" "color L" [10 10 10] "integer nsamples" [4] "string type" "blackblue"
   # use camera coordinate system (optional)
   CoordSysTransform "camera"
   # adjust light source position
@@ -76,6 +76,7 @@ AttributeEnd
 # Head model
 #
 
+#Material "fluorescent" "color Kd" [1 1 1 ] "color Ks" [.05 .05 .05] "string reradiation" "red_ink.txt"
 Material "uber" "color Kd" [1 1 1 ] "color Ks" [.05 .05 .05]
 AttributeBegin
 Translate 0 -0.2 0
