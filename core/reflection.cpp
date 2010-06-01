@@ -213,6 +213,12 @@ Spectrum FresnelBlend::f(const Vector &wo,
 		SchlickFresnel(Dot(wi, H));
 	return diffuse + specular;
 }
+
+Spectrum * BxDF::f_ptr(const Vector &wo, const Vector &wi) const
+{
+	return NULL;
+}
+
 Spectrum BxDF::Sample_f(const Vector &wo, Vector *wi,
 		float u1, float u2, float *pdf) const {
 	// Cosine-sample the hemisphere, flipping the direction if necessary
@@ -642,6 +648,21 @@ Spectrum BSDF::f(const Vector &woW,
 			f += bxdfs[i]->f(wo, wi);
 	return f;
 }
+
+Spectrum * BSDF::f_ptr(const Vector &woW, const Vector &wiW, BxDFType flags) const 
+{		
+		for (int i = 0; i < nBxDFs; ++i)
+		{
+			if (bxdfs[i]->MatchesFlags(flags))
+			{
+				Spectrum * f = bxdfs[i]->f_ptr(woW, wiW);
+				return f;
+			}
+		}
+		
+		return NULL;		
+}
+		
 Spectrum BSDF::rho(BxDFType flags) const {
 	Spectrum ret(0.);
 	for (int i = 0; i < nBxDFs; ++i)
@@ -662,8 +683,32 @@ FluoroBxDF::FluoroBxDF(string & filename) : BxDF(BxDFType(BSDF_FLUORESCENT))
 	reradiation = new Bispectrum(filename);
 }
 
+Spectrum * FluoroBxDF::f_ptr(const Vector &wo, const Vector &wi) const
+{
+	return reradiation;
+}
+
 Spectrum FluoroBxDF::f(const Vector &woW, const Vector &wiW) const{
 	return *reradiation;
+}
+
+Spectrum FluoroBxDF::Sample_f(const Vector &wo, Vector *wi, float u1, float u2, float *pdf) const
+{
+	Vector H = UniformSampleHemisphere(u1, u2);
+	
+	if (!SameHemisphere(wo, H)) H.z *= -1.f;
+	// Compute incident direction by reflecting about $\wh$
+	float costheta = Dot(wo, H);
+	*wi = -wo + 2.f * costheta * H;
+	// Compute PDF for \wi from Blinn distribution
+	float uniform_pdf = FluoroBxDF::Pdf(wo, *wi);
+	*pdf = uniform_pdf;
+	return FluoroBxDF::f(wo, *wi);
+}
+
+float FluoroBxDF::Pdf(const Vector &wi, const Vector &wo) const
+{
+	return INV_TWOPI;
 }
 
 MemoryArena BSDF::arena;

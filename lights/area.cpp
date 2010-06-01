@@ -134,13 +134,14 @@ Spectrum SpectrumFromString(string paramString)
 	if(paramString.compare("black") == 0)
 	{
 		//return some predetermined UV + blue peaks
-		L += Spectrum(368.0f, 18.f, 0.6f);
+		L += Spectrum(368.0f, 12.f, 0.6f);
 		L += Spectrum(420.0f, 4.f, 0.2f);
 	}else if(paramString.compare("blackblue") == 0)
 	{
 		//return some predetermined UV + purple peaks
-		L += Spectrum(368.0f, 18.f, 0.8f);
-		L += Spectrum(420.0f, 4.f, 0.2f);
+		//L += Spectrum(370.0f, 10.f, 10.f);
+		L += Spectrum(420.0f, 4.f, 10.f);
+		//L += Spectrum(545.f, 10.f, 10.f);
 	}else{
 		vector<string> tokens;
 		Tokenize(paramString, tokens);

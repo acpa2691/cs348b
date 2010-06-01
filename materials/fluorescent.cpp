@@ -66,14 +66,15 @@ BSDF *Fluorescent::GetBSDF(const DifferentialGeometry &dgGeom,
 	float rough = roughness->Evaluate(dgs);
 	BxDF *spec = BSDF_ALLOC(Microfacet)(ks, fresnel,
 		BSDF_ALLOC(Blinn)(1.f / rough));
-	bsdf->Add(diff);
-	bsdf->Add(spec);
+	//bsdf->Add(diff);
+	//bsdf->Add(spec);
 	bsdf->Add(fluoroBxDF);
 	return bsdf;
 }
 // Fluorescent Dynamic Creation Routine
 extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
 		const TextureParams &mp, ParamSet * paramSet = NULL) {
+	printf("MAKING FLUORESCENT MATERIAL\n");
 	Reference<Texture<Spectrum> > Kd = mp.GetSpectrumTexture("Kd", Spectrum(1.f));
 	Reference<Texture<Spectrum> > Ks = mp.GetSpectrumTexture("Ks", Spectrum(1.f));
 	Reference<Texture<float> > roughness = mp.GetFloatTexture("roughness", .1f);

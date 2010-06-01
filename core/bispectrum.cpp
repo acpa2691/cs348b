@@ -30,7 +30,7 @@ Bispectrum::Bispectrum(string &filename)
 	myfile.open(filename.c_str());
 	if (myfile.is_open())
 	{
-		printf("opened file '%s'\n", filename.c_str());
+		//printf("opened file '%s'\n", filename.c_str());
 		int row = 0;
 		string line;
 		while (!myfile.eof())
@@ -43,31 +43,31 @@ Bispectrum::Bispectrum(string &filename)
 			{
 				break;
 			}
-			//printf("current line of file '%s' is '%s' and has %d tokens\n", filename.c_str(), line.c_str(), (int)tokens.size());
+			//printf("current line(%d) of file '%s' is '%s' and has %d tokens\n", row, filename.c_str(), line.c_str(), (int)tokens.size());
 			if(row == 0)
 			{
-				nOutputIndices = tokens.size();
-				outputIndices = (float*)malloc(nOutputIndices*sizeof(float));
+				nOutputIndices = (int)tokens.size();
+				outputIndices = (int*)malloc(nOutputIndices*sizeof(int));
 			}else if(row == 1)
 			{
-				nInputIndices = tokens.size();
-				inputIndices = (float*)malloc(nInputIndices*sizeof(float));
+				nInputIndices = (int)tokens.size();
+				inputIndices = (int*)malloc(nInputIndices*sizeof(int));
 				data = (float*)malloc(nInputIndices*nOutputIndices*sizeof(float));
 			}
 			
 			for(unsigned int i = 0; i < tokens.size(); i++)
 			{
 				float currentFloat = atof(tokens.at(i).c_str());
-				printf("current float: %f\n", currentFloat);
+				//printf("current float: %f\n", currentFloat);
 				if(row == 0)
 				{
-					outputIndices[i] = currentFloat;
+					outputIndices[i] = (int)currentFloat;
 				}else if(row == 1)
 				{
-					inputIndices[i] = currentFloat;
+					inputIndices[i] = (int)currentFloat;
 				}else{
 					int curIndex = nOutputIndices*(row-2) + i;
-					data[curIndex] = currentFloat;
+					data[curIndex] = 0.01*currentFloat;
 				}
 			}
 			row++;
@@ -79,23 +79,37 @@ Bispectrum::Bispectrum(string &filename)
 	myfile.close();
 }
 
+void Bispectrum::printMyself()
+{
+	printf("i have nInputs: %d nOutputs: %d\n", nInputIndices, nOutputIndices);
+}
+
 Spectrum Bispectrum::output(Spectrum & input)
 {
+	//printf("INPUT ");
+	//input.printSelf();
 	Spectrum result(0.f); 
+	//printf("nInputs: %d nOutputs:%d\n", nInputIndices, nOutputIndices);
 	
-	for(int i = 0; i < nOutputIndices; i++)
+	for(int i = 0; i < nInputIndices; i++)
 	{
-		//int curBaseIndex = i*nOutputIndices;
-		float curOutputWavelength = outputIndices[i];
-		float total = 0.f;
-		for(int k = 0; k < nInputIndices; k++)
+		int curBaseIndex = i*nOutputIndices;
+		int curInputWavelength = inputIndices[i];
+		float curInputValue = input.getValueAtWavelength(curInputWavelength);
+		//printf("at input #%d with wavelength: %d and value: %f\n", i+1, curInputWavelength, curInputValue);
+		Spectrum currentSpec(0.f);
+		for(int k = 0; k < nOutputIndices; k++)
 		{
-			int curIndex = k*nOutputIndices+i;
-			float curInputWavelength = inputIndices[k];
-			total += data[curIndex]*input.getValueAtWavelength(curInputWavelength);
+			int curIndex = curBaseIndex+k;
+			int curOutputWavelength = outputIndices[k];
+			//printf("at index: %d\n", curIndex);
+			currentSpec.setValueAtWavelength(data[curIndex] * curInputValue, curOutputWavelength);
 		}
-		result.setValueAtWavelength(total, curOutputWavelength);
+		result += currentSpec;
 	}
+	
+	//printf("OUTPUTTING ");
+	//result.printSelf();
 	
 	return result;
 }
