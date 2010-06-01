@@ -30,13 +30,13 @@
 #include "volume.h"
 // Scene Methods
 void Scene::Render() {
-	if(!Spectrum::SpectrumTest())
+	/*if(!Spectrum::SpectrumTest())
 	{
 		printf("FAILED spectrum unit test. NO rendering allowed.\n");
 		return;
 	}else{
 		printf("PASSED spectrum unit test. YES!\n");
-	}
+	}*/
 	// Allocate and initialize _sample_
 	Sample *sample = new Sample(surfaceIntegrator,
 	                            volumeIntegrator,

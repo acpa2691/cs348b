@@ -54,7 +54,11 @@ Spectrum WhittedIntegrator::Li(const Scene *scene,
 		// Handle ray with no intersection
 		if (alpha) *alpha = 0.;
 		for (u_int i = 0; i < scene->lights.size(); ++i)
+		{
 			L += scene->lights[i]->Le(ray);
+		}
+		//printf("direct light spectrum: ");
+		//L.printSelf();
 		if (alpha && !L.Black()) *alpha = 1.;
 		return L;
 	}
@@ -70,36 +74,49 @@ Spectrum WhittedIntegrator::Li(const Scene *scene,
 		Vector wo = -ray.d;
 		// Compute emitted light if ray hit an area light source
 		L += isect.Le(wo);
+		//printf("emitted spectrum: ");
+		//L.printSelf();
 		// Add contribution of each light source
 		Vector wi;
 		for (u_int i = 0; i < scene->lights.size(); ++i) {
 			VisibilityTester visibility;
-			Spectrum Li = scene->lights[i]->Sample_L(p, &wi, &visibility);
+			Spectrum Li = scene->lights[i]->Sample_L(p, &wi, &visibility);	
+			//printf("reflected light spectrum: ");
+			//Li.printSelf();
 			if (Li.Black()) continue;
 			//Spectrum f = bsdf->f(wo, wi);
 			
 			Spectrum f = bsdf->f(wo, wi, BxDFType(BSDF_ALL & ~BSDF_FLUORESCENT));
 			if(bsdf->NumComponents(BSDF_FLUORESCENT) > 0)
 			{
-				printf("first hit fluorescent reflection!\n");
-				Bispectrum * fluoro = (Bispectrum*)&(bsdf->f(wo, wi, BxDFType(BSDF_FLUORESCENT)));
-				f += fluoro->output(f);
+				//printf("first hit fluorescent reflection. before spectrum: ");
+				//f.printSelf();
+				Bispectrum * fluoro = (Bispectrum*)(bsdf->f_ptr(wo, wi, BxDFType(BSDF_FLUORESCENT)));
+				f = fluoro->output(Li);
+				//printf("after spectrum: ");
+				//f.printSelf();
+				if (!f.Black() && visibility.Unoccluded(scene))
+					L += f * AbsDot(wi, n) * visibility.Transmittance(scene);
+			}else{
+				if (!f.Black() && visibility.Unoccluded(scene))
+					L += f * Li * AbsDot(wi, n) * visibility.Transmittance(scene);
 			}
-			
-			if (!f.Black() && visibility.Unoccluded(scene))
-				L += f * Li * AbsDot(wi, n) * visibility.Transmittance(scene);
 		}
+		//printf("returning spectrum: ");
+		//L.printSelf();
+		//return L;
 		if (rayDepth++ < maxDepth) {
 			// Trace rays for specular reflection and refraction
-			//Spectrum f = bsdf->Sample_f(wo, &wi, BxDFType(BSDF_REFLECTION | BSDF_SPECULAR));
-			
-			Spectrum f = bsdf->Sample_f(wo, &wi, BxDFType(BSDF_REFLECTION | BSDF_SPECULAR & ~BSDF_FLUORESCENT));
+			Spectrum f = bsdf->Sample_f(wo, &wi, BxDFType(BSDF_REFLECTION | BSDF_SPECULAR));
+			//printf("at depth %d f spectrum: ");
+			//f.printSelf();
+			/*Spectrum f = bsdf->Sample_f(wo, &wi, BxDFType((BSDF_REFLECTION | BSDF_SPECULAR) & ~BSDF_FLUORESCENT));
 			if(bsdf->NumComponents(BSDF_FLUORESCENT) > 0)
 			{
 				printf("number %d hit fluorescent reflection!\n", rayDepth);
 				Bispectrum * fluoro = (Bispectrum*)&(bsdf->Sample_f(wo, &wi, BxDFType(BSDF_FLUORESCENT)));
 				f += fluoro->output(f);
-			}
+			}*/
 			if (!f.Black()) {
 				// Compute ray differential _rd_ for specular reflection
 				RayDifferential rd(p, wi);

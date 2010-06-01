@@ -66,6 +66,10 @@ class COREDLL Spectrum {
     samples[WAVELENGTH_BLUE]= cs[2];
     samples[WAVELENGTH_GREEN] = cs[1];
     samples[WAVELENGTH_RED] = cs[0];
+	  if(cs[0] == cs[1] && cs[1] == cs[2])
+	  {
+		  defaultScale = cs[0];
+	  }
 	  /*
 	  for(int i = 0; i < nCIE; i++)
 	  {
@@ -83,9 +87,14 @@ class COREDLL Spectrum {
     float var = stdev*stdev;
     float coeff = scale / sqrt(2*3.145*var);
     float invTwoVar = -1.f / (2.f*var);
+	//printf("creating spectrum with var: %f coeff: %f invTwoVar: %f\n", var, coeff, invTwoVar);
     for(int lambda = minLambda; lambda < maxLambda; lambda ++){
-      setValueAtWavelength(coeff * expf(invTwoVar * (lambda - mean)*(lambda-mean)), lambda);
+		float curValue = coeff * expf(invTwoVar * (lambda - mean)*(lambda-mean));
+		//printf("adding value: %f for lambda: %d\n", curValue, lambda);
+		setValueAtWavelength(curValue, lambda);
     }
+	  //printf("and now printing myself: ");
+	  //printSelf();
   }
 	
   static bool SpectrumTest();
@@ -106,13 +115,18 @@ class COREDLL Spectrum {
     }
     else{
       const_sample_iterator before = samples.lower_bound(lambda);
+	before--;
       const_sample_iterator after = samples.upper_bound(lambda);
      
-      if(before == samples.begin() || after == samples.end())
-	return defaultScale;
+      if(before == samples.begin() || after == samples.end() || before == after)
+		  return defaultScale;
+		
+	if(before == after)
+	{
+		return before->second;
+	}
       
-      return (lambda - before->first) * (after->second - before->second)/
-	(after->first - before->first);
+      return (lambda - before->first) * (after->second - before->second)/(after->first - before->first);
     }
   }
 
@@ -279,13 +293,13 @@ class COREDLL Spectrum {
 	  //printf("XYZ printing:");
     for (const_sample_iterator itr = samples.begin(); itr != samples.end();   ++itr){
       if( itr->first > CIEstart && itr->first < CIEend){
-	//printf(" (%d, %f)", itr->first, itr->second);
-	float curVal = itr->second;
-	int curLambda = itr->first;
-		  printf(" cie x:%f y:%f z:%f ", CIE_X[curLambda - CIEstart],CIE_Y[curLambda - CIEstart],CIE_Z[curLambda - CIEstart]);
-	xyz[0] += CIE_X[curLambda - CIEstart] * curVal ;
-	xyz[1] += CIE_Y[curLambda - CIEstart] * curVal ;
-	xyz[2] += CIE_Z[curLambda - CIEstart] * curVal ;
+		//printf(" (%d, %f)", itr->first, itr->second);
+		float curVal = itr->second;
+		int curLambda = itr->first;
+			  //printf(" cie x:%f y:%f z:%f ", CIE_X[curLambda - CIEstart],CIE_Y[curLambda - CIEstart],CIE_Z[curLambda - CIEstart]);
+		xyz[0] += CIE_X[curLambda - CIEstart] * curVal ;
+		xyz[1] += CIE_Y[curLambda - CIEstart] * curVal ;
+		xyz[2] += CIE_Z[curLambda - CIEstart] * curVal ;
       }
     }
 	 // printf("\n");
@@ -293,13 +307,15 @@ class COREDLL Spectrum {
   }
 
   float y() const {
+	  //printf("getting Y value for spectrum: ");
+	  //printSelf();
     float v = 0.;
     for (const_sample_iterator itr = samples.begin(); itr != samples.end();   ++itr){
       if( itr->first > CIEstart && itr->first < CIEend){
-	float curVal = defaultScale;
-	if(!samples.empty())
-	  curVal = itr->second;
-	v += CIE_Y[itr->first - CIEstart] * curVal ;
+		float curVal = defaultScale;
+		if(!samples.empty())
+			  curVal = itr->second;
+			  v += CIE_Y[itr->first - CIEstart] * curVal;
       }
     }
     return v;

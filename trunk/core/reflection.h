@@ -96,6 +96,8 @@ public:
 	}
 	Spectrum f(const Vector &woW, const Vector &wiW,
 		BxDFType flags = BSDF_ALL) const;
+	Spectrum * f_ptr(const Vector &woW, const Vector &wiW,
+		BxDFType flags = BSDF_ALL) const;
 	Spectrum rho(BxDFType flags = BSDF_ALL) const;
 	Spectrum rho(const Vector &wo,
 	             BxDFType flags = BSDF_ALL) const;
@@ -131,6 +133,8 @@ public:
 	}
 	virtual Spectrum f(const Vector &wo,
 	                   const Vector &wi) const = 0;
+	virtual Spectrum * f_ptr(const Vector &wo,
+	                   const Vector &wi) const;
 	virtual Spectrum Sample_f(const Vector &wo, Vector *wi,
 		float u1, float u2, float *pdf) const;
 	virtual Spectrum rho(const Vector &wo,
@@ -147,6 +151,11 @@ class COREDLL FluoroBxDF : public BxDF {
 	public:
 		FluoroBxDF(string & filename);
 		Spectrum f(const Vector &woW, const Vector &wiW) const;
+		Spectrum * f_ptr(const Vector &wo, const Vector &wi) const;
+		
+		virtual Spectrum Sample_f(const Vector &wo, Vector *wi, float u1, float u2, float *pdf) const;
+		//virtual Spectrum * Sample_f_ptr(const Vector &wo, Vector *wi, float u1, float u2, float *pdf) const;
+		virtual float Pdf(const Vector &wi, const Vector &wo) const;
 	private:
 		Bispectrum * reradiation;
 };
