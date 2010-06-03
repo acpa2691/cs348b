@@ -74,6 +74,12 @@ public:
 	Spectrum Sample_f(const Vector &wo, Vector *wi,
 		BxDFType flags = BSDF_ALL,
 		BxDFType *sampledType = NULL) const;
+	Spectrum * Sample_f_ptr(const Vector &o, Vector *wi, float u1, float u2,
+		float u3, float *pdf, BxDFType flags = BSDF_ALL,
+		BxDFType *sampledType = NULL) const;
+	Spectrum * Sample_f_ptr(const Vector &wo, Vector *wi,
+		BxDFType flags = BSDF_ALL,
+		BxDFType *sampledType = NULL) const;	
 	float Pdf(const Vector &wo,
 	          const Vector &wi,
 			  BxDFType flags = BSDF_ALL) const;
@@ -137,6 +143,8 @@ public:
 	                   const Vector &wi) const;
 	virtual Spectrum Sample_f(const Vector &wo, Vector *wi,
 		float u1, float u2, float *pdf) const;
+	virtual Spectrum * Sample_f_ptr(const Vector &wo, Vector *wi,
+		float u1, float u2, float *pdf) const;
 	virtual Spectrum rho(const Vector &wo,
 	                     int nSamples = 16,
 		                 float *samples = NULL) const;
@@ -154,7 +162,7 @@ class COREDLL FluoroBxDF : public BxDF {
 		Spectrum * f_ptr(const Vector &wo, const Vector &wi) const;
 		
 		virtual Spectrum Sample_f(const Vector &wo, Vector *wi, float u1, float u2, float *pdf) const;
-		//virtual Spectrum * Sample_f_ptr(const Vector &wo, Vector *wi, float u1, float u2, float *pdf) const;
+		virtual Spectrum * Sample_f_ptr(const Vector &wo, Vector *wi, float u1, float u2, float *pdf) const;
 		virtual float Pdf(const Vector &wi, const Vector &wo) const;
 	private:
 		Bispectrum * reradiation;

@@ -116,6 +116,7 @@ Spectrum WhittedIntegrator::Li(const Scene *scene,
 				printf("number %d hit fluorescent reflection!\n", rayDepth);
 				Bispectrum * fluoro = (Bispectrum*)&(bsdf->Sample_f(wo, &wi, BxDFType(BSDF_FLUORESCENT)));
 				f += fluoro->output(f);
+			}else{
 			}*/
 			if (!f.Black()) {
 				// Compute ray differential _rd_ for specular reflection

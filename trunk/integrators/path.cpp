@@ -86,10 +86,14 @@ Spectrum PathIntegrator::Li(const Scene *scene,
 			if (alpha) *alpha = 1.;
 		}
 		else
+		{
 			pathThroughput *= scene->Transmittance(ray);
+		}
 		// Possibly add emitted light at path vertex
 		if (pathLength == 0 || specularBounce)
+		{
 			L += pathThroughput * isect.Le(-ray.d);
+		}
 		// Evaluate BSDF at hit point
 		BSDF *bsdf = isect.GetBSDF(ray);
 		// Sample illumination from lights to find path contribution
@@ -97,17 +101,13 @@ Spectrum PathIntegrator::Li(const Scene *scene,
 		const Normal &n = bsdf->dgShading.nn;
 		Vector wo = -ray.d;
 		if (pathLength < SAMPLE_DEPTH)
-			L += pathThroughput *
-				UniformSampleOneLight(scene, p, n,
-					wo, bsdf, sample,
-					lightPositionOffset[pathLength],
-					lightNumOffset[pathLength],
-					bsdfDirectionOffset[pathLength],
-					bsdfComponentOffset[pathLength]);
+		{
+			L += pathThroughput * UniformSampleOneLight(scene, p, n,wo, bsdf, sample,lightPositionOffset[pathLength],lightNumOffset[pathLength], bsdfDirectionOffset[pathLength], bsdfComponentOffset[pathLength]);
+		}
 		else
-			L += pathThroughput *
-				UniformSampleOneLight(scene, p, n,
-					wo, bsdf, sample);
+		{
+			L += pathThroughput * UniformSampleOneLight(scene, p, n, wo, bsdf, sample);
+		}
 		// Sample BSDF to get new path direction
 		// Get random numbers for sampling new direction, _bs1_, _bs2_, and _bcs_
 		float bs1, bs2, bcs;
@@ -124,12 +124,22 @@ Spectrum PathIntegrator::Li(const Scene *scene,
 		Vector wi;
 		float pdf;
 		BxDFType flags;
-		Spectrum f = bsdf->Sample_f(wo, &wi, bs1, bs2, bcs,
-			&pdf, BSDF_ALL, &flags);
-		if (f.Black() || pdf == 0.)
-			break;
-		specularBounce = (flags & BSDF_SPECULAR) != 0;
-		pathThroughput *= f * AbsDot(wi, n) / pdf;
+		Spectrum f = bsdf->Sample_f(wo, &wi, bs1, bs2, bcs, &pdf, BxDFType(BSDF_ALL & ~BSDF_FLUORESCENT), &flags);
+		if(bsdf->NumComponents(BSDF_FLUORESCENT) > 0)
+		{
+			Bispectrum * fluoro = (Bispectrum*)bsdf->Sample_f_ptr(wo, &wi, bs1, bs2, bcs, &pdf, BSDF_FLUORESCENT, &flags);
+			pathThroughput = fluoro->output(pathThroughput)* AbsDot(wi, n) / pdf;
+			specularBounce = true;
+			if(pdf == 0)
+			{
+				break;
+			}
+		}else{		
+			if (f.Black() || pdf == 0.)
+				break;
+			specularBounce = (flags & BSDF_SPECULAR) != 0;
+			pathThroughput *=  f * AbsDot(wi, n) / pdf;
+		}
 		ray = RayDifferential(p, wi);
 		// Possibly terminate the path
 		if (pathLength > 3) {
@@ -138,6 +148,7 @@ Spectrum PathIntegrator::Li(const Scene *scene,
 				break;
 			pathThroughput /= continueProbability;
 		}
+		
 		if (pathLength == maxDepth)
 			break;
 	}

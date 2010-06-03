@@ -19,6 +19,7 @@ class COREDLL Bispectrum : public Spectrum{
    //perform the matrix multiplication and return the result
 	Spectrum output(Spectrum & input);
 	void printMyself();
+	void scale(float scaleFactor);
 
  private:
 	int nInputIndices;

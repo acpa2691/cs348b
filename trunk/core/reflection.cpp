@@ -214,6 +214,11 @@ Spectrum FresnelBlend::f(const Vector &wo,
 	return diffuse + specular;
 }
 
+Spectrum * BxDF::Sample_f_ptr(const Vector &wo, Vector *wi, float u1, float u2, float *pdf) const
+{
+	return NULL;
+}
+
 Spectrum * BxDF::f_ptr(const Vector &wo, const Vector &wi) const
 {
 	return NULL;
@@ -611,6 +616,56 @@ Spectrum BSDF::Sample_f(const Vector &woW, Vector *wiW,
 	}
 	return f;
 }
+
+//this will only be used for 
+
+Spectrum * BSDF::Sample_f_ptr(const Vector &wo, Vector *wi, BxDFType flags, BxDFType *sampledType) const
+{
+	float pdf;
+	Bispectrum * f = (Bispectrum*)Sample_f_ptr(wo, wi, RandomFloat(), RandomFloat(), RandomFloat(), &pdf, flags, sampledType);
+	if (pdf > 0.) f->scale(pdf);
+	return f;
+}
+
+Spectrum * BSDF::Sample_f_ptr(const Vector &woW, Vector *wiW, float u1, float u2, float u3, float *pdf, BxDFType flags, BxDFType *sampledType) const
+{
+	int matchingComps = NumComponents(flags);
+
+	BxDF *bxdf = NULL;
+
+	for (int i = 0; i < nBxDFs; ++i)
+	{
+		if (bxdfs[i]->MatchesFlags(flags))
+		{
+			bxdf = bxdfs[i];
+			break;
+		}
+	}
+			
+	Assert(bxdf); // NOBOOK
+	// Sample chosen _BxDF_
+	Vector wi;
+	Vector wo = WorldToLocal(woW);
+	
+	*pdf = 0.f;
+	Bispectrum * f = (Bispectrum*)bxdf->Sample_f_ptr(wo, &wi, u1, u2, pdf);
+	
+	if (sampledType) *sampledType = bxdf->type;
+	
+	*wiW = LocalToWorld(wi);
+	
+	// Compute overall PDF with all matching _BxDF_s
+	if (!(bxdf->type & BSDF_SPECULAR) && matchingComps > 1) {
+		for (int i = 0; i < nBxDFs; ++i) {
+			if (bxdfs[i] != bxdf &&
+			    bxdfs[i]->MatchesFlags(flags))
+				*pdf += bxdfs[i]->Pdf(wo, wi);
+		}
+	}
+	
+	return f;
+}
+
 float BSDF::Pdf(const Vector &woW, const Vector &wiW,
 		BxDFType flags) const {
 	if (nBxDFs == 0.) return 0.;
@@ -692,8 +747,20 @@ Spectrum FluoroBxDF::f(const Vector &woW, const Vector &wiW) const{
 	return *reradiation;
 }
 
+Spectrum * FluoroBxDF::Sample_f_ptr(const Vector &wo, Vector *wi, float u1, float u2, float *pdf) const
+{
+	*wi = CosineSampleHemisphere(u1, u2);
+	if (wo.z < 0.) wi->z *= -1.f;
+	
+	float uniform_pdf = FluoroBxDF::Pdf(wo, *wi);
+	*pdf = uniform_pdf;
+	
+	return FluoroBxDF::f_ptr(wo, *wi);
+}
+
 Spectrum FluoroBxDF::Sample_f(const Vector &wo, Vector *wi, float u1, float u2, float *pdf) const
 {
+	printf("WARNING SAMPLING FLUORESCENT IN NON POINTER FASHION\n");
 	Vector H = UniformSampleHemisphere(u1, u2);
 	
 	if (!SameHemisphere(wo, H)) H.z *= -1.f;
