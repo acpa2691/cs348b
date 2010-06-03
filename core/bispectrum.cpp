@@ -79,6 +79,16 @@ Bispectrum::Bispectrum(string &filename)
 	myfile.close();
 }
 
+void Bispectrum::scale(float scaleFactor)
+{
+	int total = nOutputIndices*nInputIndices;
+	
+	for(int i = 0; i < total; i++)
+	{
+		data[i] = data[i]*scaleFactor;
+	}
+}
+
 void Bispectrum::printMyself()
 {
 	printf("i have nInputs: %d nOutputs: %d\n", nInputIndices, nOutputIndices);

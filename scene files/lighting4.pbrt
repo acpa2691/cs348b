@@ -4,7 +4,7 @@
 # of the file containing the result of rendering
 #
 Film "image" "string filename" ["lighting4.exr"]
-	"integer xresolution" [400] "integer yresolution" [400]
+	"integer xresolution" [175] "integer yresolution" [175]
 
 #
 # Sampling specification: PBRT will shoot 2 samples rays per pixel.
@@ -13,7 +13,8 @@ Film "image" "string filename" ["lighting4.exr"]
 # up in your final images.
 #
 
-Sampler "lowdiscrepancy" "integer pixelsamples" [9] 
+Sampler "lowdiscrepancy" "integer pixelsamples" [8] 
+SurfaceIntegrator "whitted" "integer maxdepth" [5]
 
 #
 # Camera configuration: the camera is located on the Z axis, and is
@@ -41,7 +42,7 @@ WorldBegin
 
 # main light
 AttributeBegin
-  AreaLightSource "area" "color L" [10 10 10] "integer nsamples" [4]
+  AreaLightSource "area" "color L" [0.5 0.5 0.5] "integer nsamples" [8] "string type" "370.0 10.0 30.0 420.0 4.0 10.0"
   Translate 0 3 3
   Rotate 90 1 0 0
   Shape "disk" "float radius" [1.5] 
@@ -49,7 +50,7 @@ AttributeEnd
 
 #fill light
 AttributeBegin
-  AreaLightSource "area" "color L" [10 10 10] "integer nsamples" [4]
+  AreaLightSource "area" "color L" [0.5 0.5 0.5] "integer nsamples" [8] "string type" "370.0 10.0 30.0 420.0 4.0 10.0"
   Translate 3.5 3.3 7
   Rotate 90 1 0 0
   Shape "disk" "float radius" [2.0] 
@@ -57,14 +58,14 @@ AttributeEnd
 
 #accent light
 AttributeBegin
-  AreaLightSource "area" "color L" [10 10 10] "integer nsamples" [4]
+  AreaLightSource "area" "color L" [0.5 0.5 0.5] "integer nsamples" [8] "string type" "370.0 10.0 30.0 420.0 4.0 10.0"
   Translate 1.5 8.25 -4
   Shape "disk" "float radius" [1.5] 
 AttributeEnd
 
 #background light
 AttributeBegin
-  AreaLightSource "area" "color L" [10 10 10] "integer nsamples" [4]
+  AreaLightSource "area" "color L" [0.5 0.5 0.5] "integer nsamples" [8] "string type" "370.0 10.0 30.0 420.0 4.0 10.0"
   Translate 3 -1 -5.25
   Rotate 135 1 0 0
   Rotate -45 0 1 0
@@ -92,6 +93,7 @@ AttributeEnd
 #
 
 Material "uber" "color Kd" [1 1 1 ] "color Ks" [.05 .05 .05]
+#Material "fluorescent" "color Kd" [1 1 1 ] "color Ks" [.05 .05 .05] "string reradiation" "red_ink.txt"
 AttributeBegin
 Translate 0 -0.2 0
 Rotate 180 0 1 0
