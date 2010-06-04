@@ -165,7 +165,7 @@ Spectrum SubsurfaceIntegrator::Li(const Scene *scene, const RayDifferential &ray
 						
 						//printf("adding irradiance");
 						//out.printSelf();
-						L +=  (1.f/dr)* Area * E; // * Ft
+						L +=  (1.f/(dr*dr))* Area * E; // * Ft
 					}
 				}
 				//printf("this is radiance BEFORE ");
