@@ -27,6 +27,19 @@
 #include "pbrt.h"
 #include "primitive.h"
 #include "transport.h"
+
+//[song,yu]
+typedef struct {
+	Point p;
+	Normal n;
+	Spectrum E; // irradiance
+	float Area;
+} irradianceCache;
+
+//[song,yu]
+extern vector<vector<irradianceCache> > FluorescentShapesCache;
+extern vector<Shape *> FluorescentShapes;
+
 // Scene Declarations
 class COREDLL Scene {
 public:

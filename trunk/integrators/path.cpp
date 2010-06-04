@@ -124,22 +124,23 @@ Spectrum PathIntegrator::Li(const Scene *scene,
 		Vector wi;
 		float pdf;
 		BxDFType flags;
-		Spectrum f = bsdf->Sample_f(wo, &wi, bs1, bs2, bcs, &pdf, BxDFType(BSDF_ALL & ~BSDF_FLUORESCENT), &flags);
-		if(bsdf->NumComponents(BSDF_FLUORESCENT) > 0)
+		
+		/*if(bsdf->NumComponents(BSDF_FLUORESCENT) > 0)
 		{
 			Bispectrum * fluoro = (Bispectrum*)bsdf->Sample_f_ptr(wo, &wi, bs1, bs2, bcs, &pdf, BSDF_FLUORESCENT, &flags);
 			pathThroughput = fluoro->output(pathThroughput)* AbsDot(wi, n) / pdf;
-			specularBounce = true;
+			specularBounce = false;
 			if(pdf == 0)
 			{
 				break;
 			}
-		}else{		
+		}	*/	
+			Spectrum f = bsdf->Sample_f(wo, &wi, bs1, bs2, bcs, &pdf, BxDFType(BSDF_ALL & ~BSDF_FLUORESCENT), &flags);
 			if (f.Black() || pdf == 0.)
 				break;
 			specularBounce = (flags & BSDF_SPECULAR) != 0;
 			pathThroughput *=  f * AbsDot(wi, n) / pdf;
-		}
+		
 		ray = RayDifferential(p, wi);
 		// Possibly terminate the path
 		if (pathLength > 3) {

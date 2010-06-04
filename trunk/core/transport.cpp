@@ -149,10 +149,26 @@ Spectrum EstimateDirect(const Scene *scene,
 	Vector wi;
 	float lightPdf, bsdfPdf;
 	VisibilityTester visibility;
-	Spectrum Li = light->Sample_L(p, n,
-		ls1, ls2, &wi, &lightPdf, &visibility);
+	Spectrum Li = light->Sample_L(p, n, ls1, ls2, &wi, &lightPdf, &visibility);
 	if (lightPdf > 0. && !Li.Black()) {
-		Spectrum f = bsdf->f(wo, wi);
+		
+		if(bsdf->NumComponents(BSDF_FLUORESCENT) > 0)
+		{
+			Bispectrum * fluoro = (Bispectrum*)bsdf->f_ptr(wo, wi, BxDFType(BSDF_FLUORESCENT));
+			if (visibility.Unoccluded(scene)) {
+				// Add light's contribution to reflected radiance
+				Li *= visibility.Transmittance(scene);
+				if (light->IsDeltaLight())
+					Ld += fluoro->output(Li)  * AbsDot(wi, n)/ lightPdf;
+				else {
+					bsdfPdf = bsdf->Pdf(wo, wi);
+					float weight = PowerHeuristic(1, lightPdf, 1, bsdfPdf);
+					Ld += fluoro->output(Li) * AbsDot(wi, n)*weight/ lightPdf;
+				}
+			}
+		}
+		
+		Spectrum f = bsdf->f(wo, wi, BxDFType(BSDF_ALL & ~BSDF_FLUORESCENT));
 		if (!f.Black() && visibility.Unoccluded(scene)) {
 			// Add light's contribution to reflected radiance
 			Li *= visibility.Transmittance(scene);
@@ -164,12 +180,38 @@ Spectrum EstimateDirect(const Scene *scene,
 				Ld += f * Li * AbsDot(wi, n) * weight / lightPdf;
 			}
 		}
+		
+		
 	}
 	// Sample BSDF with multiple importance sampling
 	if (!light->IsDeltaLight()) {
-		BxDFType flags = BxDFType(BSDF_ALL & ~BSDF_SPECULAR);
-		Spectrum f = bsdf->Sample_f(wo, &wi,
-			bs1, bs2, bcs, &bsdfPdf, flags);
+		BxDFType flags = BxDFType(BSDF_ALL & ~BSDF_SPECULAR & ~BSDF_FLUORESCENT);
+		if(bsdf->NumComponents(BSDF_FLUORESCENT) > 0)
+		{
+			Bispectrum * fluoro = (Bispectrum*)bsdf->Sample_f_ptr(wo, &wi, bs1, bs2, bcs, &bsdfPdf, BxDFType(BSDF_FLUORESCENT));
+			if (bsdfPdf > 0.) {
+				lightPdf = light->Pdf(p, n, wi);
+				if (lightPdf > 0.) {
+					// Add light contribution from BSDF sampling
+					float weight = PowerHeuristic(1, bsdfPdf, 1, lightPdf);
+					Intersection lightIsect;
+					Spectrum Li(0.f);
+					RayDifferential ray(p, wi);
+					if (scene->Intersect(ray, &lightIsect)) {
+						if (lightIsect.primitive->GetAreaLight() == light)
+							Li = lightIsect.Le(-wi);
+					}
+					else
+						Li = light->Le(ray);
+					if (!Li.Black()) {
+						Li *= scene->Transmittance(ray);
+						Ld += fluoro->output(Li) * AbsDot(wi, n)* weight / bsdfPdf;
+					}
+				}
+			}
+		}
+		
+		Spectrum f = bsdf->Sample_f(wo, &wi, bs1, bs2, bcs, &bsdfPdf, flags);
 		if (!f.Black() && bsdfPdf > 0.) {
 			lightPdf = light->Pdf(p, n, wi);
 			if (lightPdf > 0.) {
@@ -190,6 +232,59 @@ Spectrum EstimateDirect(const Scene *scene,
 				}
 			}
 		}
+		
+		
 	}
 	return Ld;
+}
+
+Spectrum EstimateIrradianceDirect(const Scene* scene,
+								  const Light* light, const Point& p,
+								  const Normal& n,
+								  int lightSamp,
+								  u_int sampleNum)
+{
+	Spectrum Ed(0.); // direct irradiance
+	// Find light and BSDF sample values for direct lighting estimate
+	float ls1, ls2;
+	
+	ls1 = RandomFloat();
+	ls2 = RandomFloat();
+	
+	// Sample light source with multiple importance sampling
+	Vector wi;
+	float lightPdf;
+	VisibilityTester visibility;
+	Spectrum Li = light->Sample_L(p, n, ls1, ls2, &wi, &lightPdf, &visibility);
+	//printf("got light sample ");
+	//Li.printSelf();
+	if (lightPdf > 0. && !Li.Black()) {
+		if (visibility.Unoccluded(scene)) {
+			// Add light's contribution to reflected radiance
+			Li *= visibility.Transmittance(scene);
+			Ed += Li * AbsDot(wi, n) / lightPdf;
+		}
+	}
+	return Ed;
+}
+
+// Uniformly samples all lights to estimate irradiance at a point
+COREDLL Spectrum EstimateIrradiance(const Scene* scene,
+									const Point& p, const Normal& n,
+									int* lightSampleOffset)
+{
+	Spectrum E(0.);
+	for (u_int i = 0; i < scene->lights.size(); ++i) {
+		Light *light = scene->lights[i];
+		int nSamples = 16;
+		// Estimate direct lighting from _light_ samples
+		Spectrum Ed(0.);
+		for (int j = 0; j < nSamples; ++j)
+			Ed += EstimateIrradianceDirect(scene, light, p, n,
+										   lightSampleOffset[i], j);
+		E += Ed / nSamples;
+	}
+	printf("estimating irradiance ");
+	E.printSelf();
+	return E;
 }

@@ -34,6 +34,7 @@ public:
 	virtual ~Primitive();
 	virtual BBox WorldBound() const = 0;
 	virtual bool CanIntersect() const;
+	virtual bool IsFluorescent() const { return false; }
 	virtual bool Intersect(const Ray &r,
 		Intersection *in) const = 0;
 	virtual bool IntersectP(const Ray &r) const = 0;
@@ -60,6 +61,7 @@ public:
 	bool CanIntersect() const;
 	void Refine(vector<Reference<Primitive> > &refined) const;
 	virtual BBox WorldBound() const;
+	virtual bool IsFluorescent() const;
 	virtual bool Intersect(const Ray &r,
 	                       Intersection *isect) const;
 	virtual bool IntersectP(const Ray &r) const;
@@ -69,10 +71,11 @@ public:
 	const AreaLight *GetAreaLight() const;
 	BSDF *GetBSDF(const DifferentialGeometry &dg,
 	              const Transform &WorldToObject) const;
-private:
-	// GeometricPrimitive Private Data
 	Reference<Shape> shape;
 	Reference<Material> material;
+	
+private:
+	// GeometricPrimitive Private Data
 	AreaLight *areaLight;
 };
 class COREDLL InstancePrimitive : public Primitive {

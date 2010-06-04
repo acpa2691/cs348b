@@ -94,6 +94,36 @@ void Bispectrum::printMyself()
 	printf("i have nInputs: %d nOutputs: %d\n", nInputIndices, nOutputIndices);
 }
 
+Spectrum Bispectrum::output(const Spectrum & input)
+{
+	//printf("INPUT ");
+	//input.printSelf();
+	Spectrum result(0.f); 
+	//printf("nInputs: %d nOutputs:%d\n", nInputIndices, nOutputIndices);
+	
+	for(int i = 0; i < nInputIndices; i++)
+	{
+		int curBaseIndex = i*nOutputIndices;
+		int curInputWavelength = inputIndices[i];
+		float curInputValue = input.getValueAtWavelength(curInputWavelength);
+		//printf("at input #%d with wavelength: %d and value: %f\n", i+1, curInputWavelength, curInputValue);
+		Spectrum currentSpec(0.f);
+		for(int k = 0; k < nOutputIndices; k++)
+		{
+			int curIndex = curBaseIndex+k;
+			int curOutputWavelength = outputIndices[k];
+			//printf("at index: %d\n", curIndex);
+			currentSpec.setValueAtWavelength(data[curIndex] * curInputValue, curOutputWavelength);
+		}
+		result += currentSpec;
+	}
+	
+	//printf("OUTPUTTING ");
+	//result.printSelf();
+	
+	return result;
+}
+
 Spectrum Bispectrum::output(Spectrum & input)
 {
 	//printf("INPUT ");

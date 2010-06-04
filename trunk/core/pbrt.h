@@ -357,6 +357,7 @@ public:
 	bool operator<(const Reference<T> &t2) const {
 		return ptr < t2.ptr;
 	}
+	T * getObject() const { return ptr; }
 private:
 	T *ptr;
 };

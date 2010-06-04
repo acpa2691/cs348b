@@ -110,6 +110,12 @@ GeometricPrimitive::
 		const Reference<Material> &m, AreaLight *a)
 	: shape(s), material(m), areaLight(a) {
 }
+
+bool GeometricPrimitive::IsFluorescent() const
+{
+	return material->IsFluorescent();
+}
+
 bool GeometricPrimitive::Intersect(const Ray &r,
 		Intersection *isect) const {
 	float thit;
