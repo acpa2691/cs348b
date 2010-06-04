@@ -55,8 +55,9 @@ class COREDLL Spectrum {
 
   Spectrum(float v = 0.f) {
 
-    if(PHOSPHOR_R = NULL)
+    /*if(PHOSPHOR_R = NULL)
       readPhosphorCurves();
+    */
 
     defaultScale = v;
 	    
@@ -73,8 +74,9 @@ class COREDLL Spectrum {
   Spectrum(float  cs[3]) {
     defaultScale = 0.f;
     
-    if(PHOSPHOR_R = NULL)
+    /*if(PHOSPHOR_R = NULL)
       readPhosphorCurves();
+    */
 
     addGaussian(WAVELENGTH_BLUE,25,cs[2]);
     addGaussian(WAVELENGTH_GREEN,25,cs[1]);
@@ -105,7 +107,7 @@ class COREDLL Spectrum {
       }
   }
   
-  void readPhosphorCurves()
+  /*  void readPhosphorCurves()
   {
     
     PHOSPHOR_R = new float[(PHOSPHORend - PHOSPHORstart)/PHOSPHORstep +1];
@@ -121,7 +123,7 @@ class COREDLL Spectrum {
       getline(line,file);
       
     }
-  }
+    }*/
 
   void addGaussian(float mean, float stdev, float scale){
     int minLambda = (int)(mean - 3 * stdev);
@@ -455,9 +457,10 @@ class COREDLL Spectrum {
   static const int PHOSPHORstart = 380;
   static const int PHOSPHORend = 775;
   static const int PHOSPHORstep = 5;
-  static float* PHOSPHOR_R = NULL;
+  /*static float* PHOSPHOR_R = NULL;
   static float* PHOSPHOR_G = NULL;
   static float* PHOSPHOR_B = NULL;
+  */
  private:
   // Spectrum Private Data
   //float c[SPECTRUM_SAMPLES];
