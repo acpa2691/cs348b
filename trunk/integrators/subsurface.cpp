@@ -153,18 +153,25 @@ Spectrum SubsurfaceIntegrator::Li(const Scene *scene, const RayDifferential &ray
 						Spectrum C1 = lu * (sigmatr + 1 / dr);
 						Spectrum C2 = zv * (sigmatr + 1 / dv);
 						Spectrum diffuseReflectance = (0.25 * INV_PI) * alphaprime * (C1 * Exp( -dr*sigmatr ) / (dr*dr) + C2 * Exp( -dv*sigmatr ) / (dv*dv));
+						diffuseReflectance.setValueAtWavelength(1.f, 380);
+						diffuseReflectance.setValueAtWavelength(1.f, 370);
+						diffuseReflectance.setValueAtWavelength(1.f, 360);
 						//printf("i have diffuse reflectance ");
 						//diffuseReflectance.printSelf();
 						//Spectrum diffuseReflectance = (0.25 * INV_PI) * alphaprime * (C1 * Exp( -dr*sigmatr ) + C2 * Exp( -dv*sigmatr ));
 						//Spectrum diffuseReflectance = (0.25 * INV_PI) * alphaprime * (C1 * Exp( -dr*sigmatr ) / dr + C2 * Exp( -dv*sigmatr ) / dv);
 						
-						Spectrum out = fluoro->output(E);
 						//printf("adding irradiance");
 						//out.printSelf();
-						L += diffuseReflectance * Area * out; // * Ft
+						L += diffuseReflectance * Area * E; // * Ft
 					}
 				}
+				//printf("this is radiance BEFORE ");
+				//L.printSelf();
 				L *= AbsDot(wo, n);
+				L = fluoro->output(L);
+				//printf("this is radiance AFTER ");
+				//L.printSelf();
 			}
 			
 			if (bsdf->NumComponents(BxDFType(BSDF_REFLECTION)) == 1) {

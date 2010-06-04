@@ -164,6 +164,12 @@ extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
 	float defaultSigmaA[3] = {0.003f, 0.0034f, 0.046f};
 	Spectrum reducedScatteringCoefficient = Spectrum(defaultSigmaSPrime);
 	Spectrum absorptionCoefficient = Spectrum(defaultSigmaA);
+	reducedScatteringCoefficient.setValueAtWavelength(5.0f, 370);
+	reducedScatteringCoefficient.setValueAtWavelength(4.0f, 380);
+	reducedScatteringCoefficient.setValueAtWavelength(4.0f, 360);
+	absorptionCoefficient.setValueAtWavelength(0.003f, 370);
+	absorptionCoefficient.setValueAtWavelength(0.004f, 380);
+	absorptionCoefficient.setValueAtWavelength(0.004f, 360);
 	if(paramSet != NULL)
 	{
 		printf("\tUSING PARAM SET\n");
