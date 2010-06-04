@@ -146,16 +146,18 @@ Spectrum SubsurfaceIntegrator::Li(const Scene *scene, const RayDifferential &ray
 						//E.printSelf();
 						Point Pr = xi - lu * n;
 						float dr = (xo - Pr).Length();
-						if (dr < 0.8*lu) continue;
+						/*
+						 if (dr < 0.8*lu) continue;
 						
 						Point Pv = xi + lu * (1 + 4*A/3)* n;
 						float dv = (xo - Pv).Length();
 						Spectrum C1 = lu * (sigmatr + 1 / dr);
 						Spectrum C2 = zv * (sigmatr + 1 / dv);
-						Spectrum diffuseReflectance = (0.25 * INV_PI) * alphaprime * (C1 * Exp( -dr*sigmatr ) / (dr*dr) + C2 * Exp( -dv*sigmatr ) / (dv*dv));
+						Spectrum diffuseReflectance = (0.25 * INV_PI) * alphaprime * (C1 * Exp(-dr*sigmatr) / (dr*dr) + C2 * Exp(-dv*sigmatr) / (dv*dv));
 						diffuseReflectance.setValueAtWavelength(1.f, 380);
 						diffuseReflectance.setValueAtWavelength(1.f, 370);
 						diffuseReflectance.setValueAtWavelength(1.f, 360);
+						 */
 						//printf("i have diffuse reflectance ");
 						//diffuseReflectance.printSelf();
 						//Spectrum diffuseReflectance = (0.25 * INV_PI) * alphaprime * (C1 * Exp( -dr*sigmatr ) + C2 * Exp( -dv*sigmatr ));
@@ -163,7 +165,7 @@ Spectrum SubsurfaceIntegrator::Li(const Scene *scene, const RayDifferential &ray
 						
 						//printf("adding irradiance");
 						//out.printSelf();
-						L += diffuseReflectance * Area * E; // * Ft
+						L +=  (1.f/dr)* Area * E; // * Ft
 					}
 				}
 				//printf("this is radiance BEFORE ");
