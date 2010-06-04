@@ -118,7 +118,7 @@ void FluorescentMaterial::Initialize(const Spectrum& reducedScatteringCoefficien
 	this->meanFreePath = 1.0 / reducedExtinctionCoefficient.y();								// l_u      = 1 / sigma_t'
 	this->virtualLightSourceHeight = meanFreePath * (1 + (4.0/3.0)*A);							// zv = lu * ( 1 + 4A/3 )
 	this->reducedAlbedo = reducedScatteringCoefficient / reducedExtinctionCoefficient;          // alpha'   = sigma_s' / sigma_t'
-	this->effectiveTransportCoefficient = ( 3.0 * absorptionCoefficient * reducedExtinctionCoefficient ).Sqrt();	// sigma_tr = sqrt(3 * sigma_a * sigma_t')
+	this->effectiveTransportCoefficient = (3.0 * absorptionCoefficient * reducedExtinctionCoefficient ).Sqrt();	// sigma_tr = sqrt(3 * sigma_a * sigma_t')
 	// float F = Ft(relativeRefractiveIndex, wo) Ft(relativeRefractiveIndex, wi)
 }
 
