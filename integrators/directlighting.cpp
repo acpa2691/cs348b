@@ -124,6 +124,7 @@ Spectrum DirectLighting::Li(const Scene *scene,
 					break;
 			}
 		}
+		return L;
 		if (rayDepth++ < maxDepth) {
 			Vector wi;
 			// Trace rays for specular reflection and refraction

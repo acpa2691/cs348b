@@ -25,31 +25,110 @@
 #include "pbrt.h"
 #include "material.h"
 #include "reflection.h"
-// Fluorescent Class Declarations
-class Fluorescent : public Material {
+
+//Modified from [song,yu]
+// FluorescentMaterial Class Declarations
+class  FluorescentMaterial : public Material {
 public:
-	// Fluorescent Public Methods
-	Fluorescent(Reference<Texture<Spectrum> > kd,
-			Reference<Texture<Spectrum> > ks,
-			Reference<Texture<float> > rough,
-			Reference<Texture<float> > bump,
-			string & filename) {
-		Kd = kd;
-		Ks = ks;
-		roughness = rough;
-		bumpMap = bump;
-		fluoroBxDF = new FluoroBxDF(filename);
-	}
-	BSDF *GetBSDF(const DifferentialGeometry &dgGeom,
-	              const DifferentialGeometry &dgShading) const;
+	FluorescentMaterial(Reference<Texture<Spectrum> > kd,
+					Reference<Texture<Spectrum> > ks,
+					Reference<Texture<float> > rough,
+					Reference<Texture<float> > bump,
+					string & filename,
+					const Spectrum& reducedScatteringCoefficient,
+					const Spectrum& absorptionCoefficient,
+					float relativeRefractiveIndex);
+	void Initialize(const Spectrum& reducedScatteringCoefficient,
+		const Spectrum& absorptionCoefficient,
+		float relativeRefractiveIndex);
+
+	// FluorescentMaterial Interface
+	virtual BSDF *GetBSDF(const DifferentialGeometry &dgGeom, const DifferentialGeometry &dgShading) const;
+	virtual ~FluorescentMaterial();
+	virtual bool IsFluorescent() const { return true; }
+
+	Spectrum scatteringCoefficient;				// (sigma_s)
+	Spectrum reducedScatteringCoefficient;			// (sigma_s')
+	Spectrum absorptionCoefficient;				// (sigma_a)
+	Spectrum extinctionCoefficient;				// (sigma_t)
+	Spectrum reducedExtinctionCoefficient;			// (sigma_t')
+	Spectrum effectiveTransportCoefficient;			// (sigma_tr)
+	//Spectrum diffuseReflectionCoefficient;		// fraction of light reflected
+		
+	float relativeRefractiveIndex;			// (eta)
+	float diffuseFresnelReflectance;			// (Fdr)
+	float diffuseFresnelTransmittance;		// (Ftr = 1 - Fdr)
+	float A;  							// Fresnel factor
+		
+	Spectrum reducedAlbedo;
+	
+	float albedo;								// (alpha)
+	float diffusionConstant; 					// (D)
+	float fresnelReflectance;					// (Fr)
+	float meanFreePath;
+	float virtualLightSourceHeight;				// (zv)
+	
+	float g;									// mean cosine of scattering angle	
 private:
 	// Fluorescent Private Data
 	Reference<Texture<Spectrum> > Kd, Ks;
 	Reference<Texture<float> > roughness, bumpMap;
 	FluoroBxDF * fluoroBxDF;
 };
+
+//Modified from [song,yu]
+/************************
+ * Fluorescent Material *
+ ************************/
+ 
+
+FluorescentMaterial::FluorescentMaterial(Reference<Texture<Spectrum> > kd, Reference<Texture<Spectrum> > ks, Reference<Texture<float> > rough, Reference<Texture<float> > bump, string & filename, const Spectrum& reducedScatteringCoefficient,
+		const Spectrum& absorptionCoefficient,
+		float relativeRefractiveIndex)
+{
+	Kd = kd;
+	Ks = ks;
+	roughness = rough;
+	bumpMap = bump;
+	fluoroBxDF = new FluoroBxDF(filename);
+	
+	Initialize(reducedScatteringCoefficient, absorptionCoefficient, relativeRefractiveIndex);
+}
+
+
+void FluorescentMaterial::Initialize(const Spectrum& reducedScatteringCoefficient,
+		const Spectrum& absorptionCoefficient,
+		float relativeRefractiveIndex)
+{
+	this->reducedScatteringCoefficient = reducedScatteringCoefficient;
+	this->absorptionCoefficient = absorptionCoefficient;
+	this->relativeRefractiveIndex = relativeRefractiveIndex;
+
+	float eta = relativeRefractiveIndex;
+	float invEta = 1.0/eta;
+	// FresnelDielectric Fr(1.0f, eta);
+	// Fr.Evaluate(cosi);
+	// Fr.Evaluate(coso);
+	this->diffuseFresnelReflectance = -1.440*invEta*invEta + 0.710*invEta + 0.668 + 0.0636*eta;
+	this->diffuseFresnelTransmittance = 1.0 - diffuseFresnelReflectance; // by conservation of energy since dialectrics don't absorb light
+	float Fdr = diffuseFresnelReflectance;
+	this->A = (1.0 + Fdr) / (1.0 - Fdr);
+	
+	this->reducedExtinctionCoefficient = reducedScatteringCoefficient + absorptionCoefficient;  // sigma_t' = sigma_s' + sigma_a
+	this->meanFreePath = 1.0 / reducedExtinctionCoefficient.y();								// l_u      = 1 / sigma_t'
+	this->virtualLightSourceHeight = meanFreePath * (1 + (4.0/3.0)*A);							// zv = lu * ( 1 + 4A/3 )
+	this->reducedAlbedo = reducedScatteringCoefficient / reducedExtinctionCoefficient;          // alpha'   = sigma_s' / sigma_t'
+	this->effectiveTransportCoefficient = ( 3.0 * absorptionCoefficient * reducedExtinctionCoefficient ).Sqrt();	// sigma_tr = sqrt(3 * sigma_a * sigma_t')
+	// float F = Ft(relativeRefractiveIndex, wo) Ft(relativeRefractiveIndex, wi)
+}
+
+
+FluorescentMaterial::~FluorescentMaterial() {
+}
+
+
 // Fluorescent Method Definitions
-BSDF *Fluorescent::GetBSDF(const DifferentialGeometry &dgGeom,
+BSDF *FluorescentMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 		const DifferentialGeometry &dgShading) const {
 	// Allocate _BSDF_, possibly doing bump-mapping with _bumpMap_
 	DifferentialGeometry dgs;
@@ -66,8 +145,8 @@ BSDF *Fluorescent::GetBSDF(const DifferentialGeometry &dgGeom,
 	float rough = roughness->Evaluate(dgs);
 	BxDF *spec = BSDF_ALLOC(Microfacet)(ks, fresnel,
 		BSDF_ALLOC(Blinn)(1.f / rough));
-	//bsdf->Add(diff);
-	//bsdf->Add(spec);
+	bsdf->Add(diff);
+	bsdf->Add(spec);
 	bsdf->Add(fluoroBxDF);
 	return bsdf;
 }
@@ -80,9 +159,20 @@ extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
 	Reference<Texture<float> > roughness = mp.GetFloatTexture("roughness", .1f);
 	Reference<Texture<float> > bumpMap = mp.GetFloatTexture("bumpmap", 0.f);
 	string fluoroFile = "red_ink.txt";
+	float relRefractiveIndex = 1.3f;
+	float defaultSigmaSPrime[3] = {2.29f, 2.39f, 1.97f};
+	float defaultSigmaA[3] = {0.003f, 0.0034f, 0.046f};
+	Spectrum reducedScatteringCoefficient = Spectrum(defaultSigmaSPrime);
+	Spectrum absorptionCoefficient = Spectrum(defaultSigmaA);
 	if(paramSet != NULL)
 	{
+		printf("\tUSING PARAM SET\n");
 		fluoroFile = paramSet->FindOneString("reradiation", fluoroFile);
+		reducedScatteringCoefficient = paramSet->FindOneSpectrum("reducedscatteringcoefficient", reducedScatteringCoefficient);
+		absorptionCoefficient = paramSet->FindOneSpectrum("absorptioncoefficient", absorptionCoefficient);
+		relRefractiveIndex= paramSet->FindOneFloat("relativerefractiveindex", relRefractiveIndex);
 	}
-	return new Fluorescent(Kd, Ks, roughness, bumpMap, fluoroFile);
+	
+	
+	return new FluorescentMaterial(Kd, Ks, roughness, bumpMap, fluoroFile, reducedScatteringCoefficient, absorptionCoefficient, relRefractiveIndex);
 }

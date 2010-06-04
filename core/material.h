@@ -38,5 +38,7 @@ public:
 	virtual ~Material();
 	static void Bump(Reference<Texture<float> > d, const DifferentialGeometry &dgGeom,
 		const DifferentialGeometry &dgShading, DifferentialGeometry *dgBump);
+	virtual bool IsFluorescent() const { return false; }
 };
+
 #endif // PBRT_MATERIAL_H

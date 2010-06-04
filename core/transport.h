@@ -63,4 +63,7 @@ COREDLL Spectrum WeightedSampleOneLight(const Scene *scene, const Point &p,
 	const Sample *sample, int lightSampleOffset, int lightNumOffset,
 	int bsdfSampleOffset, int bsdfComponentOffset, float *&avgY,
 	float *&avgYsample, float *&cdf, float &overallAvgY);
+COREDLL Spectrum EstimateIrradiance(const Scene* scene,
+	const Point& p, const Normal& n,
+	int* lightSampleOffset);
 #endif // PBRT_TRANSPORT_H

@@ -69,3 +69,5 @@ void Material::Bump(Reference<Texture<float> > d,
 	if (Dot(dgGeom.nn, dgBump->nn) < 0.f)
 		dgBump->nn *= -1.f;
 }
+
+

@@ -22,6 +22,7 @@
  */
 
 // trianglemesh.cpp*
+#include "scene.h"
 #include "shape.h"
 #include "paramset.h"
 // TriangleMesh Declarations
@@ -31,7 +32,7 @@ public:
 	TriangleMesh(const Transform &o2w, bool ro,
 	             int ntris, int nverts, const int *vptr,
 				 const Point *P, const Normal *N,
-				 const Vector *S, const float *uv);
+				 const Vector *S, const float *uv, bool generateSamples, float theSampleDistance);
 	~TriangleMesh();
 	BBox ObjectBound() const;
 	BBox WorldBound() const;
@@ -39,6 +40,7 @@ public:
 	void Refine(vector<Reference<Shape> > &refined) const;
 	friend class Triangle;
 	template <class T> friend class VertexTexture;
+	virtual int CacheIndex() const {printf("shits calling me!\n");return cacheIndex;}
 protected:
 	// TriangleMesh Data
 	int ntris, nverts;
@@ -47,7 +49,13 @@ protected:
 	Normal *n;
 	Vector *s;
 	float *uvs;
+	
+	bool shouldGenerateSamples;
+	mutable int cacheIndex;
+	float sampleDistance;
+	void GenerateSamples(vector<Reference<Shape> >& refined) const;
 };
+
 class Triangle : public Shape {
 public:
 	// Triangle Public Methods
@@ -140,10 +148,13 @@ private:
 // TriangleMesh Method Definitions
 TriangleMesh::TriangleMesh(const Transform &o2w, bool ro,
 		int nt, int nv, const int *vi, const Point *P,
-		const Normal *N, const Vector *S, const float *uv)
+		const Normal *N, const Vector *S, const float *uv, bool generateSamples, float theSampleDistance)
 	: Shape(o2w, ro) {
+	
+	shouldGenerateSamples = generateSamples;
 	ntris = nt;
 	nverts = nv;
+	
 	vertexIndex = new int[3 * ntris];
 	memcpy(vertexIndex, vi, 3 * ntris * sizeof(int));
 	// Copy _uv_, _N_, and _S_ vertex data, if present
@@ -166,6 +177,12 @@ TriangleMesh::TriangleMesh(const Transform &o2w, bool ro,
 	// Transform mesh vertices to world space
 	for (int i  = 0; i < nverts; ++i)
 		p[i] = ObjectToWorld(P[i]);
+		
+	if (shouldGenerateSamples) {
+		cacheIndex = -1;
+		FluorescentShapes.push_back(this);
+		sampleDistance = theSampleDistance;
+	}
 }
 TriangleMesh::~TriangleMesh() {
 	delete[] vertexIndex;
@@ -194,7 +211,79 @@ const {
 		                               reverseOrientation,
                                        (TriangleMesh *)this,
 									   i));
+									   
+	if (shouldGenerateSamples && cacheIndex == -1) {
+		GenerateSamples(refined);
+	}
 }
+
+void TriangleMesh::GenerateSamples(vector<Reference<Shape> >& refined) const {
+	printf("GENERATING SAMPLES\n");
+	vector<irradianceCache> cv;
+	
+	float weights[refined.size()];
+	weights[0] = refined.at(0)->Area();
+	
+	int triangleSamples[refined.size()];
+	
+	for(unsigned i = 1; i < refined.size(); i++) 
+	{
+		triangleSamples[i] = 0;
+		weights[i] = weights[i-1] + refined.at(i)->Area();
+	}
+ 
+	float totalArea = weights[refined.size() - 1];
+	int nsamples = (int)(totalArea/(sampleDistance*sampleDistance*M_PI));
+	printf("Total Area: %f\n", totalArea);
+	printf("Num samples: %d\n", nsamples);
+
+	for(int i = 0; i < nsamples; i++) 
+	{
+		float r = RandomFloat()*totalArea;
+		unsigned k;
+		for(k = 0; k < refined.size(); k++) {
+			if(weights[k] >= r)
+				break;
+		}
+		triangleSamples[k]++;
+	}
+	
+  int totalSamples = 0;
+	for(unsigned i = 1; i < refined.size(); i++) {
+    int nSample1D = Ceil2Int(sqrt(triangleSamples[i]));
+    int nSamples = nSample1D*nSample1D;
+    totalSamples += nSamples;
+    
+    float samples[2*nSamples];
+    StratifiedSample2D(samples, nSample1D, nSample1D, true);
+    
+    float* s = samples;
+    for(int j = 0; j < nSample1D; j++) 
+    {
+      for(int k = 0; k < nSample1D; k++) 
+	  {
+			irradianceCache sc;
+			sc.p = refined.at(i)->Sample(s[0], s[1], &sc.n);
+			cv.push_back(sc);
+			s += 2;
+		  }
+		}
+	}
+	
+  float area = totalArea/totalSamples;
+  assert(totalSamples == (int)cv.size());
+  for(unsigned i = 0; i < cv.size(); i++) {
+    cv.at(i).Area = area;
+  }
+
+  FluorescentShapesCache.push_back(cv);
+  std::cout << totalSamples << " total samples\n";
+  
+  printf("cache has size:%d\n", (int)FluorescentShapesCache.size());
+	
+  cacheIndex = FluorescentShapesCache.size()-1;
+}
+
 BBox Triangle::ObjectBound() const {
 	// Get triangle vertices in _p1_, _p2_, and _p3_
 	const Point &p1 = mesh->p[v[0]];
@@ -401,6 +490,10 @@ extern "C" DLLEXPORT Shape *CreateShape(const Transform &o2w,
 				vi[i], npi);
 			return NULL;
 		}
+		
+	bool generateSurfaceSamples = params.FindOneInt("generatesamples", 0);
+	float distBetweenSamples = params.FindOneFloat("distbetweensamples", 0.1);
+	
 	return new TriangleMesh(o2w, reverseOrientation, nvi/3, npi, vi, P,
-		N, S, uvs);
+		N, S, uvs, generateSurfaceSamples, distBetweenSamples);
 }

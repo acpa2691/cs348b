@@ -28,6 +28,11 @@
 #include "sampling.h"
 #include "dynload.h"
 #include "volume.h"
+
+//[song,yu]
+vector<vector<irradianceCache> > FluorescentShapesCache;
+vector<Shape *> FluorescentShapes;
+
 // Scene Methods
 void Scene::Render() {
 	/*if(!Spectrum::SpectrumTest())

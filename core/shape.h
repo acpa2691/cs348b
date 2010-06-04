@@ -54,6 +54,7 @@ public:
 	Shape(const Transform &o2w, bool ro);
 	virtual ~Shape() { }
 	virtual BBox ObjectBound() const = 0;
+	virtual int CacheIndex() const { printf("shits calling me wrong!\n");return -1; }
 	virtual BBox WorldBound() const {
 		return ObjectToWorld(ObjectBound());
 	}
