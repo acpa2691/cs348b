@@ -159,11 +159,11 @@ Spectrum EstimateDirect(const Scene *scene,
 				// Add light's contribution to reflected radiance
 				Li *= visibility.Transmittance(scene);
 				if (light->IsDeltaLight())
-					Ld += fluoro->output(Li, true, false)  * AbsDot(wi, n);
+					Ld += fluoro->output(Li, true, true)  * AbsDot(wi, n);
 				else {
 					bsdfPdf = bsdf->Pdf(wo, wi);
 					//float weight = PowerHeuristic(1, lightPdf, 1, bsdfPdf);
-					Ld += fluoro->output(Li, true, false) * AbsDot(wi, n)*bsdfPdf;
+					Ld += fluoro->output(Li, true, true) * AbsDot(wi, n)*bsdfPdf;
 				}
 			}
 		}else{
@@ -283,7 +283,7 @@ COREDLL Spectrum EstimateIrradiance(const Scene* scene,
 		Spectrum Ed(0.);
 		for (int j = 0; j < nSamples; ++j)
 			Ed += EstimateIrradianceDirect(scene, light, p, n,
-										   -1, j);
+										   lightSampleOffset[0], j);
 		E += Ed / nSamples;
 	}
 	//printf("estimating irradiance ");

@@ -8,7 +8,7 @@ Film "image" "integer xresolution" [100] "integer yresolution" [100]
 #SurfaceIntegrator "whitted" 
 #SurfaceIntegrator "path"
 #SurfaceIntegrator "directlighting"
-SurfaceIntegrator "path_subsurface"
+SurfaceIntegrator "subsurface"
 
 Sampler "lowdiscrepancy" "integer pixelsamples" [1]
 PixelFilter "gaussian" "float xwidth" [2.000000 ] "float ywidth" [2.000000 ] 
@@ -17,8 +17,8 @@ Accelerator "kdtree"
 WorldBegin
 
 AttributeBegin
-    #AreaLightSource "area" "integer nsamples" [4] "color L" [1 1 1] "string type" "370.0 10.0 15.0 420.0 2.0 4.0"
-    AreaLightSource "area" "integer nsamples" [4] "color L" [1 1 1]
+    AreaLightSource "area" "integer nsamples" [4] "color L" [1 1 1] "string type" "370.0 10.0 15.0 420.0 2.0 4.0"
+    #AreaLightSource "area" "integer nsamples" [4] "color L" [1 1 1]
     Material "matte"  "color Kd"  [0.000000 0.000000 0.000000]
     Translate 0.000000 5.500000 5.500000
     Rotate 135.000000 1.000000 0.000000 0.000000
