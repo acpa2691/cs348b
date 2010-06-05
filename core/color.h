@@ -78,21 +78,53 @@ public:
 		 */
 	}
 	
-	Spectrum(float mean, float stdev, float scale){
-		defaultScale = 0.f;
-		//int minLambda = max(mean - 3 * stdev, (float)SPECTRUM_START);
-		//int maxLambda = min (mean + 3 * stdev, (float)SPECTRUM_END);
+	void addGaussian(float mean, float stdev, float height)
+	{
 		int minLambda = mean - 3 * stdev;
 		int maxLambda = mean + 3* stdev;
 		float var = stdev*stdev;
-		float coeff = scale / sqrt(2*3.145*var);
+		float coeff = height / sqrt(2*3.145*var);
 		float invTwoVar = -1.f / (2.f*var);
+		float step = 1.f;
+		float spreadFactor = 1.3f;
+		int nSamples = 1;
+
+		setValueAtWavelength(coeff, mean);
+		while(true)
+		{
+			if(mean - step < minLambda || mean + step > maxLambda)
+			{
+				break;
+			}
+			int curStep = (int)step;
+			float curValue = coeff*expf(invTwoVar*curStep*curStep);
+			setValueAtWavelength(curValue, (int)(mean + curStep));
+			setValueAtWavelength(curValue, (int)(mean - curStep));
+			step += spreadFactor*coeff/curValue;
+			nSamples += 2;
+			//printf("adding value %f at step %d\n", curValue, mean+curStep);
+		}
+		
+		//printf("made gaussian with %d samples ", nSamples);
+		//printSelf();
+		
+		/*
 		//printf("creating spectrum with var: %f coeff: %f invTwoVar: %f\n", var, coeff, invTwoVar);
 		for(int lambda = minLambda; lambda < maxLambda; lambda ++){
 			float curValue = coeff * expf(invTwoVar * (lambda - mean)*(lambda-mean));
 			//printf("adding value: %f for lambda: %d\n", curValue, lambda);
 			setValueAtWavelength(curValue, lambda);
 		}
+		 */
+		
+	}
+	
+	Spectrum(float mean, float stdev, float scale){
+		defaultScale = 0.f;
+		addGaussian(mean, stdev, scale);
+		//int minLambda = max(mean - 3 * stdev, (float)SPECTRUM_START);
+		//int maxLambda = min (mean + 3 * stdev, (float)SPECTRUM_END);
+		
 		//printf("and now printing myself: ");
 		//printSelf();
 	}

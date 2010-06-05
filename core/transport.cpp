@@ -159,30 +159,31 @@ Spectrum EstimateDirect(const Scene *scene,
 				// Add light's contribution to reflected radiance
 				Li *= visibility.Transmittance(scene);
 				if (light->IsDeltaLight())
-					Ld += fluoro->output(Li)  * AbsDot(wi, n)/ lightPdf;
+					Ld += fluoro->output(Li, true, false)  * AbsDot(wi, n);
 				else {
 					bsdfPdf = bsdf->Pdf(wo, wi);
-					float weight = PowerHeuristic(1, lightPdf, 1, bsdfPdf);
-					Ld += fluoro->output(Li) * AbsDot(wi, n)*weight/ lightPdf;
+					//float weight = PowerHeuristic(1, lightPdf, 1, bsdfPdf);
+					Ld += fluoro->output(Li, true, false) * AbsDot(wi, n)*bsdfPdf;
+				}
+			}
+		}else{
+		
+			Spectrum f = bsdf->f(wo, wi, BxDFType(BSDF_ALL & ~BSDF_FLUORESCENT));
+			if (!f.Black() && visibility.Unoccluded(scene)) {
+				// Add light's contribution to reflected radiance
+				Li *= visibility.Transmittance(scene);
+				if (light->IsDeltaLight())
+					Ld += f * Li * AbsDot(wi, n);
+				else {
+					bsdfPdf = bsdf->Pdf(wo, wi);
+					//float weight = PowerHeuristic(1, lightPdf, 1, bsdfPdf);
+					Ld += f * Li * AbsDot(wi, n)*bsdfPdf;
 				}
 			}
 		}
 		
-		Spectrum f = bsdf->f(wo, wi, BxDFType(BSDF_ALL & ~BSDF_FLUORESCENT));
-		if (!f.Black() && visibility.Unoccluded(scene)) {
-			// Add light's contribution to reflected radiance
-			Li *= visibility.Transmittance(scene);
-			if (light->IsDeltaLight())
-				Ld += f * Li * AbsDot(wi, n) / lightPdf;
-			else {
-				bsdfPdf = bsdf->Pdf(wo, wi);
-				float weight = PowerHeuristic(1, lightPdf, 1, bsdfPdf);
-				Ld += f * Li * AbsDot(wi, n) * weight / lightPdf;
-			}
-		}
 		
-		
-	}
+	}/*
 	// Sample BSDF with multiple importance sampling
 	if (!light->IsDeltaLight()) {
 		BxDFType flags = BxDFType(BSDF_ALL & ~BSDF_SPECULAR & ~BSDF_FLUORESCENT);
@@ -205,36 +206,37 @@ Spectrum EstimateDirect(const Scene *scene,
 						Li = light->Le(ray);
 					if (!Li.Black()) {
 						Li *= scene->Transmittance(ray);
-						Ld += fluoro->output(Li) * AbsDot(wi, n)* weight / bsdfPdf;
+						Ld += fluoro->output(Li, true, false) * AbsDot(wi, n)* weight / bsdfPdf;
+					}
+				}
+			}
+		}else{
+		
+			Spectrum f = bsdf->Sample_f(wo, &wi, bs1, bs2, bcs, &bsdfPdf, flags);
+			if (!f.Black() && bsdfPdf > 0.) {
+				lightPdf = light->Pdf(p, n, wi);
+				if (lightPdf > 0.) {
+					// Add light contribution from BSDF sampling
+					float weight = PowerHeuristic(1, bsdfPdf, 1, lightPdf);
+					Intersection lightIsect;
+					Spectrum Li(0.f);
+					RayDifferential ray(p, wi);
+					if (scene->Intersect(ray, &lightIsect)) {
+						if (lightIsect.primitive->GetAreaLight() == light)
+							Li = lightIsect.Le(-wi);
+					}
+					else
+						Li = light->Le(ray);
+					if (!Li.Black()) {
+						Li *= scene->Transmittance(ray);
+						Ld += f * Li * AbsDot(wi, n) * weight / bsdfPdf;
 					}
 				}
 			}
 		}
 		
-		Spectrum f = bsdf->Sample_f(wo, &wi, bs1, bs2, bcs, &bsdfPdf, flags);
-		if (!f.Black() && bsdfPdf > 0.) {
-			lightPdf = light->Pdf(p, n, wi);
-			if (lightPdf > 0.) {
-				// Add light contribution from BSDF sampling
-				float weight = PowerHeuristic(1, bsdfPdf, 1, lightPdf);
-				Intersection lightIsect;
-				Spectrum Li(0.f);
-				RayDifferential ray(p, wi);
-				if (scene->Intersect(ray, &lightIsect)) {
-					if (lightIsect.primitive->GetAreaLight() == light)
-						Li = lightIsect.Le(-wi);
-				}
-				else
-					Li = light->Le(ray);
-				if (!Li.Black()) {
-					Li *= scene->Transmittance(ray);
-					Ld += f * Li * AbsDot(wi, n) * weight / bsdfPdf;
-				}
-			}
-		}
 		
-		
-	}
+	}*/
 	return Ld;
 }
 
@@ -284,7 +286,7 @@ COREDLL Spectrum EstimateIrradiance(const Scene* scene,
 										   lightSampleOffset[i], j);
 		E += Ed / nSamples;
 	}
-	printf("estimating irradiance ");
-	E.printSelf();
+	//printf("estimating irradiance ");
+	//E.printSelf();
 	return E;
 }

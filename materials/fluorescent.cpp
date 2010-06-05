@@ -145,8 +145,8 @@ BSDF *FluorescentMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 	float rough = roughness->Evaluate(dgs);
 	BxDF *spec = BSDF_ALLOC(Microfacet)(ks, fresnel,
 		BSDF_ALLOC(Blinn)(1.f / rough));
-	bsdf->Add(diff);
-	bsdf->Add(spec);
+	//bsdf->Add(diff);
+	//bsdf->Add(spec);
 	bsdf->Add(fluoroBxDF);
 	return bsdf;
 }
@@ -158,7 +158,7 @@ extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
 	Reference<Texture<Spectrum> > Ks = mp.GetSpectrumTexture("Ks", Spectrum(1.f));
 	Reference<Texture<float> > roughness = mp.GetFloatTexture("roughness", .1f);
 	Reference<Texture<float> > bumpMap = mp.GetFloatTexture("bumpmap", 0.f);
-	string fluoroFile = "red_ink.txt";
+	string fluoroFile = "white.txt";
 	float relRefractiveIndex = 1.3f;
 	float defaultSigmaSPrime[3] = {2.29f, 2.39f, 1.97f};
 	float defaultSigmaA[3] = {0.003f, 0.0034f, 0.046f};
