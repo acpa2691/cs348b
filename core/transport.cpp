@@ -159,11 +159,11 @@ Spectrum EstimateDirect(const Scene *scene,
 				// Add light's contribution to reflected radiance
 				Li *= visibility.Transmittance(scene);
 				if (light->IsDeltaLight())
-					Ld += fluoro->output(Li, true, true)  * AbsDot(wi, n);
+					Ld += fluoro->output(Li, true, false)  * AbsDot(wi, n);
 				else {
 					bsdfPdf = bsdf->Pdf(wo, wi);
 					//float weight = PowerHeuristic(1, lightPdf, 1, bsdfPdf);
-					Ld += fluoro->output(Li, true, true) * AbsDot(wi, n)*bsdfPdf;
+					Ld += fluoro->output(Li, true, false) * AbsDot(wi, n)*bsdfPdf;
 				}
 			}
 		}else{
