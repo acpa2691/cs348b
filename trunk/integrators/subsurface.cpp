@@ -165,13 +165,14 @@ Spectrum SubsurfaceIntegrator::Li(const Scene *scene, const RayDifferential &ray
 						
 						//printf("adding irradiance");
 						//out.printSelf();
-						L +=  (1.f/(dr*dr))* Area * E; // * Ft
+						L +=  min(1.f, (0.6f/(dr*dr)))* Area * E; // * Ft
+						//printf("cur distance %f\n", dr);
 					}
 				}
 				//printf("this is radiance BEFORE ");
 				//L.printSelf();
 				L *= AbsDot(wo, n);
-				L = fluoro->output(L);
+				L = fluoro->output(L, false, true);
 				//printf("this is radiance AFTER ");
 				//L.printSelf();
 			}
@@ -181,7 +182,7 @@ Spectrum SubsurfaceIntegrator::Li(const Scene *scene, const RayDifferential &ray
 			}
 			
 			// Apply direct lighting strategy
-			if(!isect.primitive->IsFluorescent()) {
+			if(true) {
 				switch (strategy) {
 						case SAMPLE_ALL_UNIFORM:
 							L += UniformSampleAllLights(scene, p, n, wo, bsdf,

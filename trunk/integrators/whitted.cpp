@@ -104,7 +104,7 @@ Spectrum WhittedIntegrator::Li(const Scene *scene,
 		}
 		//printf("returning spectrum: ");
 		//L.printSelf();
-		//return L;
+		return L;
 		if (rayDepth++ < maxDepth) {
 			// Trace rays for specular reflection and refraction
 			Spectrum f = bsdf->Sample_f(wo, &wi, BxDFType(BSDF_REFLECTION | BSDF_SPECULAR));

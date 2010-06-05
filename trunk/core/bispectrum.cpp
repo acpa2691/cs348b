@@ -67,7 +67,7 @@ Bispectrum::Bispectrum(string &filename)
 					inputIndices[i] = (int)currentFloat;
 				}else{
 					int curIndex = nOutputIndices*(row-2) + i;
-					data[curIndex] = 0.01*currentFloat;
+					data[curIndex] = 0.05f*0.01*currentFloat;
 				}
 			}
 			row++;
@@ -94,38 +94,13 @@ void Bispectrum::printMyself()
 	printf("i have nInputs: %d nOutputs: %d\n", nInputIndices, nOutputIndices);
 }
 
-Spectrum Bispectrum::output(const Spectrum & input)
-{
-	//printf("INPUT ");
-	//input.printSelf();
-	Spectrum result(0.f); 
-	//printf("nInputs: %d nOutputs:%d\n", nInputIndices, nOutputIndices);
-	
-	for(int i = 0; i < nInputIndices; i++)
-	{
-		int curBaseIndex = i*nOutputIndices;
-		int curInputWavelength = inputIndices[i];
-		float curInputValue = input.getValueAtWavelength(curInputWavelength);
-		//printf("at input #%d with wavelength: %d and value: %f\n", i+1, curInputWavelength, curInputValue);
-		Spectrum currentSpec(0.f);
-		for(int k = 0; k < nOutputIndices; k++)
-		{
-			int curIndex = curBaseIndex+k;
-			int curOutputWavelength = outputIndices[k];
-			//printf("at index: %d\n", curIndex);
-			currentSpec.setValueAtWavelength(data[curIndex] * curInputValue, curOutputWavelength);
-		}
-		result += currentSpec;
-	}
-	
-	//printf("OUTPUTTING ");
-	//result.printSelf();
-	
-	return result;
-}
-
 Spectrum Bispectrum::output(Spectrum & input)
 {
+	return Bispectrum::output(input, true, true);
+}
+
+Spectrum Bispectrum::output(Spectrum & input, bool mainDiag, bool reemission)
+{
 	//printf("INPUT ");
 	//input.printSelf();
 	Spectrum result(0.f); 
@@ -143,7 +118,23 @@ Spectrum Bispectrum::output(Spectrum & input)
 			int curIndex = curBaseIndex+k;
 			int curOutputWavelength = outputIndices[k];
 			//printf("at index: %d\n", curIndex);
-			currentSpec.setValueAtWavelength(data[curIndex] * curInputValue, curOutputWavelength);
+			
+			if(i == k)
+			{
+				if(mainDiag)
+				{
+					currentSpec.setValueAtWavelength(data[curIndex] * curInputValue, curOutputWavelength);
+				}else{
+					currentSpec.setValueAtWavelength(0.f, curOutputWavelength);
+				}
+			}else{
+				if(reemission)
+				{
+					currentSpec.setValueAtWavelength(data[curIndex] * curInputValue, curOutputWavelength);
+				}else{
+					currentSpec.setValueAtWavelength(0.f, curOutputWavelength);
+				}
+			}
 		}
 		result += currentSpec;
 	}
