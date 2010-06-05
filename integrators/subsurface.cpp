@@ -172,9 +172,9 @@ Spectrum SubsurfaceIntegrator::Li(const Scene *scene, const RayDifferential &ray
 				//printf("this is radiance BEFORE ");
 				//L.printSelf();
 				L *= AbsDot(wo, n);
-				L = fluoro->output(L, false, true);
-				//printf("this is radiance AFTER ");
-				//L.printSelf();
+				L = fluoro->output(L, true, true);
+				printf("this is radiance AFTER ");
+				L.printSelf();
 			}
 			
 			if (bsdf->NumComponents(BxDFType(BSDF_REFLECTION)) == 1) {
@@ -182,7 +182,7 @@ Spectrum SubsurfaceIntegrator::Li(const Scene *scene, const RayDifferential &ray
 			}
 			
 			// Apply direct lighting strategy
-			if(true) {
+			if(!isect.primitive->IsFluorescent()) {
 				switch (strategy) {
 						case SAMPLE_ALL_UNIFORM:
 							L += UniformSampleAllLights(scene, p, n, wo, bsdf,

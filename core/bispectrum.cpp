@@ -67,7 +67,7 @@ Bispectrum::Bispectrum(string &filename)
 					inputIndices[i] = (int)currentFloat;
 				}else{
 					int curIndex = nOutputIndices*(row-2) + i;
-					data[curIndex] = 0.05f*0.01*currentFloat;
+					data[curIndex] = 0.01*currentFloat;
 				}
 			}
 			row++;

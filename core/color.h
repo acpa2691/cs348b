@@ -80,8 +80,8 @@ public:
 	
 	void addGaussian(float mean, float stdev, float height)
 	{
-		int minLambda = mean - 3 * stdev;
-		int maxLambda = mean + 3* stdev;
+		int minLambda = (int)(mean - 3 * stdev);
+		int maxLambda = (int)(mean + 3* stdev);
 		float var = stdev*stdev;
 		float coeff = height / sqrt(2*3.145*var);
 		float invTwoVar = -1.f / (2.f*var);

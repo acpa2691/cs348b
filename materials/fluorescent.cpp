@@ -158,7 +158,7 @@ extern "C" DLLEXPORT Material * CreateMaterial(const Transform &xform,
 	Reference<Texture<Spectrum> > Ks = mp.GetSpectrumTexture("Ks", Spectrum(1.f));
 	Reference<Texture<float> > roughness = mp.GetFloatTexture("roughness", .1f);
 	Reference<Texture<float> > bumpMap = mp.GetFloatTexture("bumpmap", 0.f);
-	string fluoroFile = "white.txt";
+	string fluoroFile = "red_ink.txt";
 	float relRefractiveIndex = 1.3f;
 	float defaultSigmaSPrime[3] = {2.29f, 2.39f, 1.97f};
 	float defaultSigmaA[3] = {0.003f, 0.0034f, 0.046f};
