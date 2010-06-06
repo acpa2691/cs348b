@@ -35,7 +35,7 @@
 //#define SPECTRUM_END SPECTRUM_START + SPECTRUM_SAMPLES
 //#define SPECTRUM_SAMPLES (SPECTRUM_END - SPECTRUM_START + 1)
 
-#define WAVELENGTH_RED 575
+#define WAVELENGTH_RED 700
 #define WAVELENGTH_GREEN 535
 #define WAVELENGTH_BLUE 445
 
@@ -59,6 +59,7 @@ public:
 		samples[WAVELENGTH_BLUE]= defaultScale;
 		samples[WAVELENGTH_GREEN] = defaultScale;
 		samples[WAVELENGTH_RED] = defaultScale;
+		//samples[640] = defaultScale;
 	}
 	//cs needs to have sive SPECTRUM_SAMPLES
 	Spectrum(float  cs[3]) {
@@ -66,6 +67,7 @@ public:
 		samples[WAVELENGTH_BLUE]= cs[2];
 		samples[WAVELENGTH_GREEN] = cs[1];
 		samples[WAVELENGTH_RED] = cs[0];
+		//samples[640] = cs[0];
 		if(cs[0] == cs[1] && cs[1] == cs[2])
 		{
 			defaultScale = cs[0];
@@ -141,25 +143,40 @@ public:
 	
 	float getValueAtWavelength(int lambda) const
 	{
-		const_sample_iterator itr  = samples.find(lambda);
-		if(itr != samples.end()){
-			return itr->second;
-		}
-		else{
-			const_sample_iterator before = samples.lower_bound(lambda);
-			before--;
-			const_sample_iterator after = samples.upper_bound(lambda);
+	  const_sample_iterator itr = samples.begin();
+	  //cout <<"Spectrum is ";
+	  for(itr; itr != samples.end(); ++itr){
+	    //cout <<"("<<itr->first<<","<<itr->second<<") ";
+	  }
+	  //cout <<endl;
+	  //cout <<"For sample "<<lambda <<" returning";
+	  itr  = samples.find(lambda);
+	  if(itr != samples.end()){
+	    //cout << " In vector "<<itr->second<<endl;
+	    return itr->second;
+	  }
+	  else{
+
+	    if(lambda < samples.begin()->first || lambda > samples.rbegin()->first)
+	      {
+		//cout <<" default "<<defaultScale <<endl;
+		return defaultScale;
+	      }
 			
-			if(before == samples.begin() || after == samples.end() || before == after)
-				return defaultScale;
-			
-			if(before == after)
-			{
-				return before->second;
-			}
-			
-			return (lambda - before->first) * (after->second - before->second)/(after->first - before->first);
-		}
+	    for(itr = samples.begin(); itr != --samples.end(); ++itr){
+	      const_sample_iterator before = itr, after = itr;
+	      ++after;
+	      if(lambda >= before->first && lambda < after->first){
+		float scale = (lambda - before->first) *  (after->second -
+							   before->second)/(after->first -  before->first)+ before->second;
+		//cout <<scale <<endl;
+		return scale;
+	      }			
+	    }
+	  }
+	  //This should never be reached
+	  assert(false);
+	  return defaultScale;
 	}
 	
 	Spectrum &operator+=(const Spectrum &s2) {
@@ -282,7 +299,7 @@ public:
 		Spectrum ret;
 		for (const_sample_iterator itr = e.samples.begin(); itr != e.samples.end();
 			 ++itr){
-			float lambda = itr->first;
+			int lambda = itr->first;
 			float curVal = getValueAtWavelength(lambda);
 			ret.setValueAtWavelength(curVal > 0.f ? curVal : 0.f, lambda);
 		}
