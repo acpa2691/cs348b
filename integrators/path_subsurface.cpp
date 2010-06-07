@@ -259,7 +259,7 @@ Spectrum PathSubsurface::Li(const Scene *scene,
       }
 		
        if (pathLength == maxDepth){
-	 cout <<"pathLength == maxDepth"<<endl;
+	 //cout <<"pathLength == maxDepth"<<endl;
 	break;
        }
 
@@ -268,7 +268,7 @@ Spectrum PathSubsurface::Li(const Scene *scene,
 	
 	if(pathLength > 0 && hitFluorescent)
 	{
-		L *= 0.05f;
+		L *= 0.02f;
 	}
   return L;
 }
