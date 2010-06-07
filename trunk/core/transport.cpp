@@ -283,7 +283,7 @@ COREDLL Spectrum EstimateIrradiance(const Scene* scene,
 		Spectrum Ed(0.);
 		for (int j = 0; j < nSamples; ++j)
 			Ed += EstimateIrradianceDirect(scene, light, p, n,
-										   lightSampleOffset[0], j);
+										   -1, j);
 		E += Ed / nSamples;
 	}
 	//printf("estimating irradiance ");
