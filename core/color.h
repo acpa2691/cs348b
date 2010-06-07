@@ -35,9 +35,12 @@
 //#define SPECTRUM_END SPECTRUM_START + SPECTRUM_SAMPLES
 //#define SPECTRUM_SAMPLES (SPECTRUM_END - SPECTRUM_START + 1)
 
-#define WAVELENGTH_RED 700
+#define WAVELENGTH_RED 575
 #define WAVELENGTH_GREEN 535
 #define WAVELENGTH_BLUE 445
+
+#define VISIBLE_START 400
+#define VISIBLE_END 700
 
 using namespace std;
 typedef map<int,float>::iterator sample_iterator;
@@ -49,6 +52,7 @@ public:
 	// Spectrum Public Methods
 	
 	Spectrum(float v = 0.f) {
+		onlyVisible = true;
 		defaultScale = v;
 		/*
 		 for(int i = 0; i < nCIE; i++)
@@ -59,15 +63,14 @@ public:
 		samples[WAVELENGTH_BLUE]= defaultScale;
 		samples[WAVELENGTH_GREEN] = defaultScale;
 		samples[WAVELENGTH_RED] = defaultScale;
-		//samples[640] = defaultScale;
 	}
 	//cs needs to have sive SPECTRUM_SAMPLES
 	Spectrum(float  cs[3]) {
+		onlyVisible = true;
 		defaultScale = 0.f;
 		samples[WAVELENGTH_BLUE]= cs[2];
 		samples[WAVELENGTH_GREEN] = cs[1];
 		samples[WAVELENGTH_RED] = cs[0];
-		//samples[640] = cs[0];
 		if(cs[0] == cs[1] && cs[1] == cs[2])
 		{
 			defaultScale = cs[0];
@@ -90,7 +93,7 @@ public:
 		float step = 1.f;
 		float spreadFactor = 1.3f;
 		int nSamples = 1;
-
+		
 		setValueAtWavelength(coeff, mean);
 		while(true)
 		{
@@ -111,12 +114,12 @@ public:
 		//printSelf();
 		
 		/*
-		//printf("creating spectrum with var: %f coeff: %f invTwoVar: %f\n", var, coeff, invTwoVar);
-		for(int lambda = minLambda; lambda < maxLambda; lambda ++){
-			float curValue = coeff * expf(invTwoVar * (lambda - mean)*(lambda-mean));
-			//printf("adding value: %f for lambda: %d\n", curValue, lambda);
-			setValueAtWavelength(curValue, lambda);
-		}
+		 //printf("creating spectrum with var: %f coeff: %f invTwoVar: %f\n", var, coeff, invTwoVar);
+		 for(int lambda = minLambda; lambda < maxLambda; lambda ++){
+		 float curValue = coeff * expf(invTwoVar * (lambda - mean)*(lambda-mean));
+		 //printf("adding value: %f for lambda: %d\n", curValue, lambda);
+		 setValueAtWavelength(curValue, lambda);
+		 }
 		 */
 		
 	}
@@ -138,45 +141,41 @@ public:
 	
 	void setValueAtWavelength(float val, int lambda)
 	{
+		if((lambda < VISIBLE_START || lambda > VISIBLE_END) && val > 0)
+		{
+			onlyVisible = false;
+		}
 		samples[lambda] = val;
 	}
 	
 	float getValueAtWavelength(int lambda) const
 	{
-	  const_sample_iterator itr = samples.begin();
-	  //cout <<"Spectrum is ";
-	  for(itr; itr != samples.end(); ++itr){
-	    //cout <<"("<<itr->first<<","<<itr->second<<") ";
-	  }
-	  //cout <<endl;
-	  //cout <<"For sample "<<lambda <<" returning";
-	  itr  = samples.find(lambda);
-	  if(itr != samples.end()){
-	    //cout << " In vector "<<itr->second<<endl;
-	    return itr->second;
-	  }
-	  else{
-
-	    if(lambda < samples.begin()->first || lambda > samples.rbegin()->first)
-	      {
-		//cout <<" default "<<defaultScale <<endl;
-		return defaultScale;
-	      }
+		if(onlyVisible)
+		{
+			if(lambda < VISIBLE_START || lambda > VISIBLE_END)
+			{
+				return 0.f;
+			}
+		}
+		const_sample_iterator itr  = samples.find(lambda);
+		if(itr != samples.end()){
+			return itr->second;
+		}
+		else{
+			const_sample_iterator before = samples.lower_bound(lambda);
+			before--;
+			const_sample_iterator after = samples.upper_bound(lambda);
 			
-	    for(itr = samples.begin(); itr != --samples.end(); ++itr){
-	      const_sample_iterator before = itr, after = itr;
-	      ++after;
-	      if(lambda >= before->first && lambda < after->first){
-		float scale = (lambda - before->first) *  (after->second -
-							   before->second)/(after->first -  before->first)+ before->second;
-		//cout <<scale <<endl;
-		return scale;
-	      }			
-	    }
-	  }
-	  //This should never be reached
-	  assert(false);
-	  return defaultScale;
+			if(before == samples.begin() || after == samples.end() || before == after)
+				return defaultScale;
+			
+			if(before == after)
+			{
+				return before->second;
+			}
+			
+			return (lambda - before->first) * (after->second - before->second)/(after->first - before->first);
+		}
 	}
 	
 	Spectrum &operator+=(const Spectrum &s2) {
@@ -230,7 +229,7 @@ public:
 		Spectrum ret = *this;
 		for (const_sample_iterator itr = samples.begin(); itr != samples.end();
 			 ++itr){
-			ret.setValueAtWavelength(ret.getValueAtWavelength(itr->first)*a, itr->first);
+			ret.setValueAtWavelength(this->getValueAtWavelength(itr->first)*a, itr->first);
 		}
 		return ret;
 	}
@@ -299,7 +298,7 @@ public:
 		Spectrum ret;
 		for (const_sample_iterator itr = e.samples.begin(); itr != e.samples.end();
 			 ++itr){
-			int lambda = itr->first;
+			float lambda = itr->first;
 			float curVal = getValueAtWavelength(lambda);
 			ret.setValueAtWavelength(curVal > 0.f ? curVal : 0.f, lambda);
 		}
@@ -386,6 +385,7 @@ private:
 	//float c[SPECTRUM_SAMPLES];
 	map<int, float> samples;
 	float defaultScale;
+	bool onlyVisible;
 	static float XWeight[COLOR_SAMPLES];
 	static float YWeight[COLOR_SAMPLES];
 	static float ZWeight[COLOR_SAMPLES];

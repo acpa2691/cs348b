@@ -101,9 +101,16 @@ Spectrum PathSubsurface::Li(const Scene *scene,
   Spectrum pathThroughput = 1., L = 0.;
   RayDifferential ray(r);
   bool specularBounce = false;
-
-  for (int pathLength = 0; ; ++pathLength) {
-    cout <<"path length " << pathLength <<endl;
+	int pathLength = 0;
+	bool hitFluorescent = false;
+  for (pathLength = 0; ; ++pathLength) {
+	  /*if(pathLength > 0)
+	  {
+		  pathThroughput *= 0;
+		  printf("cur throughput ");
+		  pathThroughput.printSelf();
+	  }*/
+    //cout <<"path length " << pathLength <<endl;
     // Find next vertex of path
     Intersection isect;
     if (!scene->Intersect(ray, &isect)) {
@@ -146,6 +153,7 @@ Spectrum PathSubsurface::Li(const Scene *scene,
     if (scene->lights.size() > 0) {
       // Apply subsurface scattering if the material is fluorescent
       if (isect.primitive->IsFluorescent()) {
+		  hitFluorescent = true;
 	//printf("at fluorescent intersection\n");
 	const GeometricPrimitive* prim = (GeometricPrimitive*)isect.primitive;
 	Reference<Shape> shapeRef = prim->shape;
@@ -186,11 +194,11 @@ Spectrum PathSubsurface::Li(const Scene *scene,
 	//printf("this is radiance BEFORE ");
 	//L.printSelf();
 	L *= AbsDot(wo, n);
-	L = pathThroughput * fluoro->output(L);
+	L = pathThroughput * fluoro->output(L, false, true);
 	//printf("this is radiance AFTER ");
 	//L.printSelf();
       }
-      else{
+      
 	if (pathLength < SAMPLE_DEPTH)
 	  {
 	    L += pathThroughput * UniformSampleOneLight(scene, p, n,wo, bsdf, sample,lightPositionOffset[pathLength],lightNumOffset[pathLength], bsdfDirectionOffset[pathLength], bsdfComponentOffset[pathLength]);
@@ -199,7 +207,7 @@ Spectrum PathSubsurface::Li(const Scene *scene,
 	  {
 	    L += pathThroughput * UniformSampleOneLight(scene, p, n, wo, bsdf, sample);
 	  }
-      }
+      
 		
 		
       // Sample BSDF to get new path direction
@@ -227,7 +235,7 @@ Spectrum PathSubsurface::Li(const Scene *scene,
 	  specularBounce = false;
 	  if(pdf == 0)
 	    {
-	      cout << "PDF is O "<<endl;
+	      //cout << "PDF is O "<<endl;
 	      break;
 	    }
 	}	
@@ -235,7 +243,7 @@ Spectrum PathSubsurface::Li(const Scene *scene,
 		
       Spectrum f = bsdf->Sample_f(wo, &wi, bs1, bs2, bcs, &pdf, BxDFType(BSDF_ALL & ~BSDF_FLUORESCENT), &flags);
       if (f.Black() || pdf == 0.){
-	cout <<"f.Black() || pdf == 0." <<endl;
+	//cout <<"f.Black() || pdf == 0." <<endl;
 	break;
       }
       specularBounce = (flags & BSDF_SPECULAR) != 0;
@@ -257,6 +265,11 @@ Spectrum PathSubsurface::Li(const Scene *scene,
 
     }
   }
+	
+	if(pathLength > 0 && hitFluorescent)
+	{
+		L *= 0.05f;
+	}
   return L;
 }
 

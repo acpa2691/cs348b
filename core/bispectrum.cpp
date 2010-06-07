@@ -123,15 +123,19 @@ Spectrum Bispectrum::output(Spectrum & input, bool mainDiag, bool reemission)
 			{
 				if(mainDiag)
 				{
+					//printf("doin main diag\n");
 					currentSpec.setValueAtWavelength(data[curIndex] * curInputValue, curOutputWavelength);
 				}else{
+					//printf("not doin main diag\n");
 					currentSpec.setValueAtWavelength(0.f, curOutputWavelength);
 				}
 			}else{
 				if(reemission)
 				{
+					//printf("doin reemission\n");
 					currentSpec.setValueAtWavelength(data[curIndex] * curInputValue, curOutputWavelength);
 				}else{
+					//printf("not doin reemission\n");
 					currentSpec.setValueAtWavelength(0.f, curOutputWavelength);
 				}
 			}

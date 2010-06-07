@@ -146,9 +146,9 @@ Spectrum SubsurfaceIntegrator::Li(const Scene *scene, const RayDifferential &ray
 						//E.printSelf();
 						Point Pr = xi - lu * n;
 						float dr = (xo - Pr).Length();
-						/*
-						 if (dr < 0.8*lu) continue;
 						
+						 if (dr < 0.8) continue;
+						/*
 						Point Pv = xi + lu * (1 + 4*A/3)* n;
 						float dv = (xo - Pv).Length();
 						Spectrum C1 = lu * (sigmatr + 1 / dr);
@@ -165,13 +165,14 @@ Spectrum SubsurfaceIntegrator::Li(const Scene *scene, const RayDifferential &ray
 						
 						//printf("adding irradiance");
 						//out.printSelf();
-						L +=  min(1.f, (0.6f/(dr*dr)))* Area * E; // * Ft
+						L +=  min(1.f, (0.6f/(dr*dr)))* Area * E;// * Ft
 						//printf("cur distance %f\n", dr);
 					}
 				}
+				
+				L *= AbsDot(wo, n);
 				//printf("this is radiance BEFORE ");
 				//L.printSelf();
-				L *= AbsDot(wo, n);
 				L = fluoro->output(L, false, true);
 				//printf("this is radiance AFTER ");
 				//L.printSelf();
