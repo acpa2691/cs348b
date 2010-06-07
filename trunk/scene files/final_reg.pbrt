@@ -1,0 +1,64 @@
+ConcatTransform [ 0.828849 -0.295370 -0.475149 0.000000 -0.559473 -0.437585 -0.703924 0.000000 -0.000000 0.849280 -0.527943 0.000000 0.000000 0.000000 0.000000 1.000000 ]
+Translate -4.860000 -7.200000 -5.400000
+#LookAt -7 10 3 0 0 0 0 0 1
+Camera "perspective" "float fov" [45.000000 ] 
+Film "image" "integer xresolution" [512] "integer yresolution" [512]
+    "string filename" "final_reg.exr"
+
+#SurfaceIntegrator "whitted" 
+#SurfaceIntegrator "path"
+#SurfaceIntegrator "directlighting"
+#SurfaceIntegrator "subsurface"
+SurfaceIntegrator "path_subsurface"
+
+Sampler "lowdiscrepancy" "integer pixelsamples" [128]
+PixelFilter "gaussian" "float xwidth" [2.000000 ] "float ywidth" [2.000000 ] 
+Accelerator "kdtree"
+
+WorldBegin
+
+AttributeBegin
+    #AreaLightSource "area" "integer nsamples" [4] "color L" [1 1 1] "string type" "370.0 10.0 30.0 420.0 2.0 4.0"
+    #AreaLightSource "area" "integer nsamples" [4] "color L" [1 1 1] "string type" "370.0 10.0 30.0 465.0 1.5 16.0"
+    AreaLightSource "area" "integer nsamples" [4] "color L" [1 1 1]
+    Material "matte"  "color Kd"  [0.000000 0.000000 0.000000]
+    Translate 0.000000 5.500000 5.500000
+    Rotate 135.000000 1.000000 0.000000 0.000000
+    Shape "disk" "float height" 0.000000 "float radius" 2.000000 
+AttributeEnd
+AttributeBegin
+CoordSysTransform "camera"
+AttributeEnd
+
+AttributeBegin
+    Material "matte" "color Kd" [.5 .3 .8]
+    Scale 7 7 1
+    Include "plane.pbrt"
+AttributeEnd
+
+
+AttributeBegin
+    Material "fluorescent" "color Kd" [.5 .5 .5] "color Ks" [.2 .2 .2] "float roughness" [.1] "string reradiation" "red_ink.txt"
+    #Material "plastic" "color Kd" [.5 .5 .5] "color Ks" [.2 .2 .2] "float roughness" [.5]
+    Rotate 90.000000 1.000000 0.000000 0.000000
+    Rotate 124.000000 0.000000 1.000000 0.000000
+    Translate 2.4 0.001 2.0
+    Scale 20 20 20
+    Include "bunny.pbrt"
+AttributeEnd
+
+
+AttributeBegin
+    #Material "fluorescent" "color Kd" [.5 .5 .5] "color Ks" [.2 .2 .2] "float roughness" [.1] "string reradiation" "red_ink.txt"
+    Material "plastic" "color Kd" [.5 .5 .5] "color Ks" [.2 .2 .2] "float roughness" [.5]
+    Rotate 90.000000 1.000000 0.000000 0.000000
+    Rotate 100.000000 0.000000 1.000000 0.000000
+    Translate -.5 0.001 2.9
+    Scale -17 17 -17
+    Include "bunny_non.pbrt"
+AttributeEnd
+
+
+
+WorldEnd
+# ignored frame end
