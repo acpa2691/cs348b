@@ -268,7 +268,7 @@ Spectrum PathSubsurface::Li(const Scene *scene,
 	
 	if(pathLength > 0 && hitFluorescent)
 	{
-		L *= 0.02f;
+		L *= 0.0115f;
 	}
   return L;
 }
