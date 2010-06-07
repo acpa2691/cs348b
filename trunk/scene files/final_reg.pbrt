@@ -11,7 +11,7 @@ Film "image" "integer xresolution" [325] "integer yresolution" [325]
 #SurfaceIntegrator "subsurface"
 SurfaceIntegrator "path_subsurface"
 
-Sampler "lowdiscrepancy" "integer pixelsamples" [256]
+Sampler "lowdiscrepancy" "integer pixelsamples" [128]
 PixelFilter "gaussian" "float xwidth" [2.000000 ] "float ywidth" [2.000000 ] 
 Accelerator "kdtree"
 
